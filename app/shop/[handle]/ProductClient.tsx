@@ -3,20 +3,59 @@
 import { useState } from "react";
 import { Product } from "@/lib/types";
 import { ProductCard } from "@/components/ProductCard";
+import { useCart } from "@/components/CartProvider";
+import { useCurrency } from "@/components/CurrencyProvider";
+import { getSiteContent } from "@/content/site";
+import { Locale } from "@/lib/i18n";
 
 export function ProductClient({
+  locale,
   product,
   relatedProducts,
 }: {
+  locale: Locale;
   product: Product;
   relatedProducts: Product[];
 }) {
-  const sizes = Array.from(new Set(product.variants.map((v) => v.size).filter(Boolean)));
-  const [selectedSize, setSelectedSize] = useState<string>(sizes[0] || "");
-  const [cartOpen, setCartOpen] = useState(false);
+  const content = getSiteContent(locale).product;
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const { formatPrice } = useCurrency();
+  const sizeOptions = Array.from(
+    product.variants
+      .filter((variant) => variant.size)
+      .reduce((options, variant) => {
+        const current = options.get(variant.size);
+        options.set(variant.size, {
+          size: variant.size,
+          available: Boolean(current?.available || variant.available),
+        });
+        return options;
+      }, new Map<string, { size: string; available: boolean }>())
+      .values()
+  );
+  const firstAvailableSize = sizeOptions.find((option) => option.available)?.size;
+  const [selectedSize, setSelectedSize] = useState<string>(
+    firstAvailableSize || sizeOptions[0]?.size || ""
+  );
+  const { addProduct } = useCart();
   const fallbackImage =
     "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
   const images = product.images.length > 0 ? product.images : [fallbackImage];
+  const selectedVariant =
+    product.variants.find((variant) => variant.size === selectedSize) || product.variants[0];
+  const selectedSizeAvailable =
+    sizeOptions.length > 0
+      ? Boolean(sizeOptions.find((option) => option.size === selectedSize)?.available)
+      : product.variants.some((variant) => variant.available) || product.variants.length === 0;
+  const canAddToCart = selectedSizeAvailable;
+
+  function handleAddToCart() {
+    if (!canAddToCart) {
+      return;
+    }
+
+    addProduct(product, selectedSize);
+  }
 
   return (
     <div className="min-h-screen pb-28 pt-20 md:pb-16 md:pt-28">
@@ -43,48 +82,65 @@ export function ProductClient({
 
           <div className="relative w-full px-4 md:px-0 lg:w-2/5">
             <div className="sticky top-32">
-              <p className="mb-5 text-xs uppercase text-[#111111]/55">DUMKA made-to-occasion</p>
+              <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.kicker}</p>
               <h1 className="mb-4 font-serif text-4xl font-light uppercase leading-tight md:text-5xl">
                 {product.title}
               </h1>
-              <p className="mb-10 text-lg font-light text-[#111111]/70">{product.price}</p>
+              <p className="mb-10 text-lg font-light text-[#111111]/70">
+                {formatPrice(product.priceNumber)}
+              </p>
 
-              {sizes.length > 0 && (
+              {sizeOptions.length > 0 && (
                 <div className="mb-10">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="text-xs uppercase text-[#111111]/80">
-                      Розмір
+                      {content.size}
                     </span>
-                    <button className="text-xs uppercase underline text-[#111111]/50">
-                      Розмірна сітка
+                    <button
+                      className="text-xs uppercase underline text-[#111111]/50"
+                      onClick={() => setSizeGuideOpen(true)}
+                    >
+                      {content.sizeGuide}
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {sizes.map((size) => (
+                    {sizeOptions.map(({ size, available }) => (
                       <button
                         key={size}
+                        disabled={!available}
                         onClick={() => setSelectedSize(size)}
                         className={`flex h-12 w-12 items-center justify-center border text-sm transition-colors ${
                           selectedSize === size
                             ? "border-[#111111] bg-[#111111] text-white"
                             : "border-[#111111]/20 text-[#111111] hover:border-[#111111]"
-                        }`}
+                        } ${!available ? "cursor-not-allowed text-[#111111]/25 line-through hover:border-[#111111]/20" : ""}`}
                       >
                         {size}
                       </button>
                     ))}
                   </div>
+                  <p className="mt-4 text-xs uppercase text-[#111111]/50">
+                    {selectedSizeAvailable
+                      ? selectedVariant?.available === false
+                        ? content.someUnavailable
+                        : content.available
+                      : content.unavailable}
+                  </p>
                 </div>
               )}
 
-              <button className="primary-button mb-12 hidden w-full md:inline-flex" onClick={() => setCartOpen(true)}>
-                Додати до кошика
+              <button
+                className="primary-button mb-12 hidden w-full disabled:bg-[#111111]/25 md:inline-flex"
+                disabled={!canAddToCart}
+                onClick={handleAddToCart}
+              >
+                {canAddToCart ? content.addToCart : content.unavailable}
               </button>
 
               <div className="border-t border-[#111111]/10">
                 <details className="group" open>
                   <summary className="flex cursor-pointer list-none items-center justify-between py-6 text-xs font-medium uppercase">
-                    <span>Опис</span>
+                    <span>{content.description}</span>
                     <span className="transition group-open:rotate-180">
                       <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                     </span>
@@ -93,32 +149,32 @@ export function ProductClient({
                     {product.bodyHtml ? (
                       <div dangerouslySetInnerHTML={{ __html: product.bodyHtml }} />
                     ) : (
-                      <p>Виріб створено з увагою до посадки, силуету та відчуття тканини на тілі.</p>
+                      <p>{content.descriptionFallback}</p>
                     )}
                   </div>
                 </details>
 
                 <details className="group border-t border-[#111111]/10">
                   <summary className="flex cursor-pointer list-none items-center justify-between py-6 text-xs font-medium uppercase">
-                    <span>Тканина та догляд</span>
+                    <span>{content.care}</span>
                     <span className="transition group-open:rotate-180">
                       <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                     </span>
                   </summary>
                   <div className="pb-6 text-sm font-light leading-7 text-[#111111]/70">
-                    <p>Тільки професійна суха чистка. Не прати. Не відбілювати.</p>
+                    <p>{content.careText}</p>
                   </div>
                 </details>
                 
                 <details className="group border-t border-[#111111]/10">
                   <summary className="flex cursor-pointer list-none items-center justify-between py-6 text-xs font-medium uppercase">
-                    <span>Доставка та повернення</span>
+                    <span>{content.delivery}</span>
                     <span className="transition group-open:rotate-180">
                       <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                     </span>
                   </summary>
                   <div className="pb-6 text-sm font-light leading-7 text-[#111111]/70">
-                    <p>Безкоштовна доставка Новою Поштою по Україні протягом 1-3 днів. Повернення можливе протягом 14 днів з моменту отримання.</p>
+                    <p>{content.deliveryText}</p>
                   </div>
                 </details>
               </div>
@@ -131,8 +187,8 @@ export function ProductClient({
           <section className="px-4 pt-24 md:px-0 md:pt-28">
             <div className="mb-12 flex items-end justify-between gap-8">
               <div>
-                <p className="mb-4 text-xs uppercase text-[#111111]/55">Styling</p>
-                <h2 className="font-serif text-4xl font-light uppercase">Complete the look</h2>
+                <p className="mb-4 text-xs uppercase text-[#111111]/55">{content.styling}</p>
+                <h2 className="font-serif text-4xl font-light uppercase">{content.related}</h2>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-8 lg:grid-cols-3">
@@ -147,41 +203,79 @@ export function ProductClient({
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#111111]/10 bg-white px-4 py-3 md:hidden">
         <div className="mb-3 flex items-center justify-between gap-4 text-sm">
           <span className="line-clamp-1">{product.title}</span>
-          <span className="shrink-0 text-[#111111]/65">{product.price}</span>
+          <span className="shrink-0 text-[#111111]/65">{formatPrice(product.priceNumber)}</span>
         </div>
-        <button className="primary-button w-full" onClick={() => setCartOpen(true)}>
-          Додати до кошика
+        <button
+          className="primary-button w-full disabled:bg-[#111111]/25"
+          disabled={!canAddToCart}
+          onClick={handleAddToCart}
+        >
+          {canAddToCart ? content.addToCart : content.unavailable}
         </button>
       </div>
 
       <div
         className={`fixed inset-0 z-50 bg-[#111111]/35 transition duration-500 ${
-          cartOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          sizeGuideOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
-        onClick={() => setCartOpen(false)}
+        onClick={() => setSizeGuideOpen(false)}
       />
       <aside
-        className={`fixed right-0 top-0 z-50 h-dvh w-full max-w-md bg-white px-6 py-7 transition duration-700 md:px-10 ${
-          cartOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 bg-white px-5 py-6 text-[#111111] shadow-2xl transition duration-500 md:px-8 md:py-8 ${
+          sizeGuideOpen
+            ? "pointer-events-auto -translate-y-1/2 opacity-100"
+            : "pointer-events-none -translate-y-[46%] opacity-0"
         }`}
+        aria-hidden={!sizeGuideOpen}
+        aria-modal="true"
+        role="dialog"
       >
-        <div className="mb-12 flex items-center justify-between text-xs uppercase">
-          <span>Додано до кошика</span>
-          <button className="luxury-link" onClick={() => setCartOpen(false)}>
-            Закрити
+        <div className="mb-8 flex items-center justify-between gap-6 text-xs uppercase">
+          <span>{content.sizeGuide}</span>
+          <button className="luxury-link" onClick={() => setSizeGuideOpen(false)}>
+            {content.close}
           </button>
         </div>
-        <div className="flex gap-5 border-b border-[#111111]/10 pb-8">
-          <div className="h-32 w-24 shrink-0 bg-white">
-            <img src={images[0]} alt={product.title} className="h-full w-full object-cover" />
-          </div>
-          <div>
-            <h2 className="font-serif text-2xl uppercase">{product.title}</h2>
-            <p className="mt-3 text-sm text-[#111111]/65">{product.price}</p>
-            {selectedSize && <p className="mt-2 text-xs uppercase text-[#111111]/50">Розмір {selectedSize}</p>}
-          </div>
+
+        <p className="mb-7 max-w-xl text-sm leading-7 text-[#111111]/65">
+          {content.sizeGuideText}
+        </p>
+
+        <div className="overflow-x-auto border-y border-[#111111]/10">
+          <table className="w-full min-w-[520px] text-left text-xs">
+            <thead className="uppercase text-[#111111]/55">
+              <tr className="border-b border-[#111111]/10">
+                <th className="py-4 font-normal">{content.sizeTable.size}</th>
+                <th className="py-4 font-normal">{content.sizeTable.bust}</th>
+                <th className="py-4 font-normal">{content.sizeTable.waist}</th>
+                <th className="py-4 font-normal">{content.sizeTable.hips}</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#111111]/75">
+              {[
+                ["XS", "82-86", "62-66", "88-92"],
+                ["S", "86-90", "66-70", "92-96"],
+                ["M", "90-94", "70-74", "96-100"],
+                ["L", "94-100", "74-80", "100-106"],
+                ["XL", "100-106", "80-86", "106-112"],
+              ].map((row) => (
+                <tr key={row[0]} className="border-b border-[#111111]/10 last:border-b-0">
+                  {row.map((cell) => (
+                    <td key={cell} className="py-4">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <button className="primary-button mt-8 w-full">Перейти до оформлення</button>
+
+        <div className="mt-7 grid gap-2 text-xs uppercase leading-5 text-[#111111]/50 sm:grid-cols-3">
+          {content.sizeNotes.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+        </div>
       </aside>
     </div>
   );

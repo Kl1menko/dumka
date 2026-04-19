@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { Product } from "@/lib/types";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 export function ProductCard({ product }: { product: Product }) {
+  const { formatPrice } = useCurrency();
   const mainImage =
     product.images[0] ||
     "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
@@ -24,7 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
         <img
           src={hoverImage}
           alt={`${product.title} alternative`}
-          className="product-tile-image scale-[1.015] opacity-0 group-hover:scale-100 group-hover:opacity-100"
+          className="product-tile-image opacity-0 group-hover:opacity-100"
           referrerPolicy="no-referrer"
         />
         <span className="product-tile-action" aria-hidden="true">+</span>
@@ -35,7 +37,7 @@ export function ProductCard({ product }: { product: Product }) {
           {product.title}
         </h3>
         <p className="mt-1 text-[12px] leading-5 text-[#111111]/62 sm:text-sm">
-          {product.price}
+          {formatPrice(product.priceNumber)}
         </p>
       </div>
     </Link>

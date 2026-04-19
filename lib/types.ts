@@ -1,4 +1,5 @@
 export interface ProductVariant {
+  id: string; // Shopify Storefront merchandise id
   title: string; // e.g. "S / Black"
   price: string; // formatted price
   priceNumber: number; // raw price for sorting if needed
@@ -14,4 +15,7 @@ export interface Product {
   images: string[];
   variants: ProductVariant[];
   price: string; // lowest price formatted 
+  priceNumber: number; // lowest price raw number
+  productType: string;
+  tags: string[];
 }
