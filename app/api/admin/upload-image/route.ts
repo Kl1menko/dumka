@@ -36,8 +36,12 @@ export async function POST(request: Request) {
 
   const bucketReady = await ensureBucketExists(admin, bucket);
   if (!bucketReady.ok) {
+    const errorMessage =
+      "error" in bucketReady
+        ? bucketReady.error
+        : "Не вдалося підготувати сховище зображень.";
     return NextResponse.json(
-      { error: bucketReady.error || "Не вдалося підготувати сховище зображень." },
+      { error: errorMessage },
       { status: 500 }
     );
   }
