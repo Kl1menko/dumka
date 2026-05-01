@@ -1,11 +1,11 @@
 export interface ProductVariant {
-  id: string; // Shopify Storefront merchandise id
-  title: string; // e.g. "S / Black"
-  price: string; // formatted price
-  priceNumber: number; // raw price for sorting if needed
-  size: string; // Option1 Value
-  color: string; // Option2 Value
-  available: boolean; 
+  id: string;
+  title: string;
+  price: string;        // formatted UAH string for display
+  priceNumber: number;  // raw UAH value
+  size: string;
+  color: string;
+  available: boolean;
 }
 
 export interface Product {
@@ -14,8 +14,10 @@ export interface Product {
   bodyHtml: string;
   images: string[];
   variants: ProductVariant[];
-  price: string; // lowest price formatted 
-  priceNumber: number; // lowest price raw number
+  price: string;        // lowest variant price, formatted
+  priceNumber: number;  // lowest variant price, raw UAH
   productType: string;
   tags: string[];
+  sortOrder?: number;
+  published?: boolean;
 }

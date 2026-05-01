@@ -20,8 +20,22 @@ export function ProductClient({
   const content = getSiteContent(locale).product;
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { formatPrice } = useCurrency();
+  const colorOptions = Array.from(
+    new Set(
+      product.variants
+        .map((variant) => variant.color?.trim())
+        .filter((color): color is string => Boolean(color))
+    )
+  );
+  const [selectedColor, setSelectedColor] = useState<string>(colorOptions[0] ?? "");
+
+  const filteredVariants =
+    selectedColor.length > 0
+      ? product.variants.filter((variant) => variant.color === selectedColor)
+      : product.variants;
+
   const sizeOptions = Array.from(
-    product.variants
+    filteredVariants
       .filter((variant) => variant.size)
       .reduce((options, variant) => {
         const current = options.get(variant.size);
@@ -42,11 +56,13 @@ export function ProductClient({
     "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
   const images = product.images.length > 0 ? product.images : [fallbackImage];
   const selectedVariant =
-    product.variants.find((variant) => variant.size === selectedSize) || product.variants[0];
+    filteredVariants.find((variant) => variant.size === selectedSize) ||
+    filteredVariants[0] ||
+    product.variants[0];
   const selectedSizeAvailable =
     sizeOptions.length > 0
       ? Boolean(sizeOptions.find((option) => option.size === selectedSize)?.available)
-      : product.variants.some((variant) => variant.available) || product.variants.length === 0;
+      : filteredVariants.some((variant) => variant.available) || filteredVariants.length === 0;
   const canAddToCart = selectedSizeAvailable;
 
   function handleAddToCart() {
@@ -54,8 +70,10 @@ export function ProductClient({
       return;
     }
 
-    addProduct(product, selectedSize);
+    addProduct(product, selectedSize, selectedColor);
   }
+
+  const hasHtmlDescription = /<[^>]+>/.test(product.bodyHtml);
 
   return (
     <div className="min-h-screen pb-28 pt-20 md:pb-16 md:pt-28">
@@ -87,8 +105,54 @@ export function ProductClient({
                 {product.title}
               </h1>
               <p className="mb-10 text-lg font-light text-[#111111]/70">
-                {formatPrice(product.priceNumber)}
+                {formatPrice(selectedVariant?.priceNumber ?? product.priceNumber)}
               </p>
+
+              {colorOptions.length > 1 && (
+                <div className="mb-8">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-xs uppercase text-[#111111]/80">
+                      {locale === "uk" ? "Колір" : "Color"}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {colorOptions.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => {
+                          setSelectedColor(color);
+                          const variantsInColor = product.variants.filter((v) => v.color === color);
+                          const sizesInColor = Array.from(
+                            variantsInColor
+                              .filter((v) => v.size)
+                              .reduce((options, variant) => {
+                                const current = options.get(variant.size);
+                                options.set(variant.size, {
+                                  size: variant.size,
+                                  available: Boolean(current?.available || variant.available),
+                                });
+                                return options;
+                              }, new Map<string, { size: string; available: boolean }>())
+                              .values()
+                          );
+                          const nextSize =
+                            sizesInColor.find((option) => option.available)?.size ||
+                            sizesInColor[0]?.size ||
+                            "";
+                          setSelectedSize(nextSize);
+                        }}
+                        className={`h-12 border px-4 text-xs uppercase tracking-wide transition-colors ${
+                          selectedColor === color
+                            ? "border-[#111111] bg-[#111111] text-white"
+                            : "border-[#111111]/20 text-[#111111] hover:border-[#111111]"
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {sizeOptions.length > 0 && (
                 <div className="mb-10">
@@ -147,7 +211,11 @@ export function ProductClient({
                   </summary>
                   <div className="pb-6 text-sm font-light leading-7 text-[#111111]/70">
                     {product.bodyHtml ? (
-                      <div dangerouslySetInnerHTML={{ __html: product.bodyHtml }} />
+                      hasHtmlDescription ? (
+                        <div dangerouslySetInnerHTML={{ __html: product.bodyHtml }} />
+                      ) : (
+                        <div className="whitespace-pre-line">{product.bodyHtml}</div>
+                      )
                     ) : (
                       <p>{content.descriptionFallback}</p>
                     )}
@@ -203,7 +271,9 @@ export function ProductClient({
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#111111]/10 bg-white px-4 py-3 md:hidden">
         <div className="mb-3 flex items-center justify-between gap-4 text-sm">
           <span className="line-clamp-1">{product.title}</span>
-          <span className="shrink-0 text-[#111111]/65">{formatPrice(product.priceNumber)}</span>
+          <span className="shrink-0 text-[#111111]/65">
+            {formatPrice(selectedVariant?.priceNumber ?? product.priceNumber)}
+          </span>
         </div>
         <button
           className="primary-button w-full disabled:bg-[#111111]/25"

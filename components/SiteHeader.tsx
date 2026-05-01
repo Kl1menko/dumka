@@ -217,6 +217,7 @@ export function SiteHeader() {
             <div className="grid grid-cols-2 gap-8 border-t border-[#111111]/10 pt-8 text-xs uppercase text-[#111111]/60">
               <div className="space-y-4">
                 <p className="text-[#111111]">{isEnglish ? "Catalog" : "Каталог"}</p>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/shop`} onClick={() => setDrawer(null)}>{isEnglish ? "All products" : "Усі товари"}</Link>
                 <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/shop?category=suits`} onClick={() => setDrawer(null)}>{isEnglish ? "Suits" : "Костюми"}</Link>
                 <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/shop?category=dresses`} onClick={() => setDrawer(null)}>{isEnglish ? "Dresses" : "Сукні"}</Link>
                 <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/shop?category=evening`} onClick={() => setDrawer(null)}>{isEnglish ? "Evening wear" : "Вечірній одяг"}</Link>
@@ -376,7 +377,12 @@ export function SiteHeader() {
                       {item.title}
                     </Link>
                     <div className="mt-3 space-y-1 text-xs uppercase text-[#111111]/50">
-                      {item.size && <p>{isEnglish ? "Size" : "Розмір"} {item.size}</p>}
+                      {(item.size || item.color) && (
+                        <p>
+                          {isEnglish ? "Variant" : "Варіант"}{" "}
+                          {[item.size, item.color].filter(Boolean).join(" / ")}
+                        </p>
+                      )}
                       <p>{formatPrice(item.priceNumber)}</p>
                     </div>
 

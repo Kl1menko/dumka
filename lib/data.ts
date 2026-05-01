@@ -1,71 +1,96 @@
 import { Product, ProductVariant } from "./types";
+import { createClient } from "./supabase/server";
 
 export interface ProductsResult {
   products: Product[];
   error: string;
 }
 
+type VariantRow = {
+  id: string;
+  title: string;
+  price_uah: number;
+  size: string;
+  color: string;
+  available: boolean;
+  sort_order: number;
+};
+
+type ProductRow = {
+  handle: string;
+  title: string;
+  body_html: string;
+  images: string[];
+  product_type: string;
+  tags: string[];
+  sort_order: number;
+  published: boolean;
+  product_variants: VariantRow[];
+};
+
+function formatUah(value: number): string {
+  return (
+    new Intl.NumberFormat("uk-UA", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value) + " ₴"
+  );
+}
+
+function mapRow(row: ProductRow): Product {
+  const variants: ProductVariant[] = [...(row.product_variants ?? [])]
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((v) => ({
+      id: v.id,
+      title: v.title,
+      price: formatUah(v.price_uah),
+      priceNumber: v.price_uah,
+      size: v.size,
+      color: v.color,
+      available: v.available,
+    }));
+
+  const minVariant =
+    variants.length > 0
+      ? variants.reduce((min, v) =>
+          v.priceNumber < min.priceNumber ? v : min
+        )
+      : null;
+
+  return {
+    handle: row.handle,
+    title: row.title,
+    bodyHtml: row.body_html,
+    images: row.images ?? [],
+    variants,
+    price: minVariant?.price ?? "0 ₴",
+    priceNumber: minVariant?.priceNumber ?? 0,
+    productType: row.product_type,
+    tags: row.tags ?? [],
+    sortOrder: row.sort_order,
+    published: row.published,
+  };
+}
+
 export async function getProductsResult(): Promise<ProductsResult> {
   try {
-    const url = 'https://j06wf9-vp.myshopify.com/products.json?limit=250';
-    const response = await fetch(url, { next: { revalidate: 3600 } });
+    const supabase = await createClient();
 
-    if (!response.ok) {
-      throw new Error(`Shopify endpoint returned ${response.status}`);
-    }
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, product_variants(*)")
+      .eq("published", true)
+      .order("sort_order", { ascending: true });
 
-    const json = await response.json();
+    if (error) throw error;
 
-    const rawProducts = Array.isArray(json) ? json : json.products || [];
-
-    const products = rawProducts.map((row: any) => {
-      // Map shopify product to our type
-      const variants: ProductVariant[] = (row.variants || []).map((v: any) => {
-        const rawPrice = parseFloat(v.price || "0");
-        const variantId = v.admin_graphql_api_id || `gid://shopify/ProductVariant/${v.id}`;
-        const formattedPrice = new Intl.NumberFormat("uk-UA", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(rawPrice) + " ₴";
-        
-        return {
-          id: variantId,
-          title: v.title || "",
-          price: formattedPrice,
-          priceNumber: rawPrice,
-          size: v.option1 || "",
-          color: v.option2 || "",
-          available: v.available ?? true,
-        };
-      });
-
-      let defaultPrice = "0 ₴";
-      let defaultPriceNumber = 0;
-      if (variants.length > 0) {
-        const minPriceVariant = variants.reduce((min, v) => (v.priceNumber < min.priceNumber ? v : min), variants[0]);
-        defaultPrice = minPriceVariant.price;
-        defaultPriceNumber = minPriceVariant.priceNumber;
-      }
-
-      return {
-        handle: row.handle,
-        title: row.title,
-        bodyHtml: row.body_html || "",
-        images: (row.images || []).map((img: any) => img.src),
-        variants,
-        price: defaultPrice,
-        priceNumber: defaultPriceNumber,
-        productType: row.product_type || "",
-        tags: Array.isArray(row.tags) ? row.tags : [],
-      };
-    });
-
-    return { products, error: "" };
-  } catch (error) {
-    console.error("Error reading products:", error);
+    return { products: (data as ProductRow[]).map(mapRow), error: "" };
+  } catch (err) {
+    console.error("Error reading products:", err);
     return {
       products: [],
-      error: "Каталог тимчасово недоступний. Спробуйте оновити сторінку або зв'яжіться з шоурумом.",
+      error:
+        "Каталог тимчасово недоступний. Спробуйте оновити сторінку або зв'яжіться з шоурумом.",
     };
   }
 }
@@ -75,7 +100,23 @@ export async function getProducts(): Promise<Product[]> {
   return result.products;
 }
 
-export async function getProductByHandle(handle: string): Promise<Product | undefined> {
-  const products = await getProducts();
-  return products.find((p) => p.handle === handle);
+export async function getProductByHandle(
+  handle: string
+): Promise<Product | undefined> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, product_variants(*)")
+      .eq("handle", handle)
+      .eq("published", true)
+      .single();
+
+    if (error || !data) return undefined;
+
+    return mapRow(data as ProductRow);
+  } catch {
+    return undefined;
+  }
 }

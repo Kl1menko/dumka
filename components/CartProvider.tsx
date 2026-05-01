@@ -19,6 +19,7 @@ export interface CartItem {
   title: string;
   image: string;
   size: string;
+  color?: string;
   price: string;
   priceNumber: number;
   quantity: number;
@@ -32,7 +33,7 @@ interface CartContextValue {
   isCartOpen: boolean;
   checkoutLoading: boolean;
   checkoutError: string;
-  addProduct: (product: Product, size?: string) => void;
+  addProduct: (product: Product, size?: string, color?: string) => void;
   checkout: () => Promise<void>;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
@@ -82,12 +83,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const subtotalLabel = formatPrice(subtotal);
 
   const value = useMemo<CartContextValue>(() => {
-    function addProduct(product: Product, size = "") {
+    function addProduct(product: Product, size = "", color = "") {
       const selectedVariant =
-        product.variants.find((variant) => variant.size === size) || product.variants[0];
+        product.variants.find(
+          (variant) =>
+            (size ? variant.size === size : true) &&
+            (color ? variant.color === color : true)
+        ) ||
+        product.variants.find((variant) => (size ? variant.size === size : true)) ||
+        product.variants[0];
       const normalizedSize = size || selectedVariant?.size || "";
+      const normalizedColor = color || selectedVariant?.color || "";
       const variantId = selectedVariant?.id || "";
-      const id = `${product.handle}:${variantId || normalizedSize || "default"}`;
+      const id = `${product.handle}:${variantId || `${normalizedSize}:${normalizedColor}` || "default"}`;
 
       setItems((currentItems) => {
         const existingItem = currentItems.find((item) => item.id === id);
@@ -105,6 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           title: product.title,
           image: product.images[0] || "",
           size: normalizedSize,
+          color: normalizedColor,
           price: selectedVariant?.price || product.price,
           priceNumber: selectedVariant?.priceNumber || product.priceNumber,
           quantity: 1,
@@ -225,6 +234,7 @@ function isCartItem(value: unknown): value is CartItem {
     typeof item.variantId === "string" &&
     typeof item.handle === "string" &&
     typeof item.title === "string" &&
+    (typeof item.color === "string" || typeof item.color === "undefined") &&
     typeof item.price === "string" &&
     typeof item.priceNumber === "number" &&
     typeof item.quantity === "number"

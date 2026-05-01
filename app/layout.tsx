@@ -1,16 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
-import { SiteHeader } from '@/components/SiteHeader'
-import { CartProvider } from '@/components/CartProvider'
-import { CurrencyProvider } from '@/components/CurrencyProvider'
-import { SiteFooter } from '@/components/SiteFooter'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter' })
-const cormorant = Cormorant_Garamond({ 
+const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'cyrillic'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-cormorant' 
+  variable: '--font-cormorant'
 })
 
 export const metadata: Metadata = {
@@ -27,15 +23,7 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body className={`${inter.variable} ${cormorant.variable} bg-white font-sans text-[#111111] antialiased`}>
-        <CurrencyProvider>
-          <CartProvider>
-            <SiteHeader />
-
-            <main>{children}</main>
-
-            <SiteFooter />
-          </CartProvider>
-        </CurrencyProvider>
+        {children}
       </body>
     </html>
   )

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { getStoriesContent } from "@/content/stories";
 import { Locale } from "@/lib/i18n";
 
@@ -34,11 +37,26 @@ function getStorySlug(story: unknown) {
 
 export function StoriesPageContent({ locale }: { locale: Locale }) {
   const content = getStoriesContent(locale);
-  const mainStory = content.stories[0];
-  const supportingStories = content.stories.slice(1);
+  const [activeFilter, setActiveFilter] = useState(content.filters[0] || "all");
+  const [activeYear, setActiveYear] = useState<string>("");
   const storiesBasePath = getStoriesBasePath(locale);
-  const mainStorySlug = getStorySlug(mainStory);
-  const mainStorySourceUrl = getStorySourceUrl(mainStory);
+
+  const filteredStories = useMemo(() => {
+    return content.stories.filter((story) => {
+      const matchFilter =
+        !activeFilter ||
+        activeFilter.toLowerCase().includes("all") ||
+        story.category.toLowerCase() === activeFilter.toLowerCase();
+      const matchYear = !activeYear || story.year === activeYear;
+      return matchFilter && matchYear;
+    });
+  }, [activeFilter, activeYear, content.stories]);
+
+  const visibleStories = filteredStories.length ? filteredStories : content.stories;
+  const mainStory = visibleStories[0];
+  const supportingStories = visibleStories.slice(1);
+  const mainStorySlug = mainStory ? getStorySlug(mainStory) : null;
+  const mainStorySourceUrl = mainStory ? getStorySourceUrl(mainStory) : null;
 
   return (
     <div className="min-h-screen bg-white pt-28 md:pt-36">
@@ -49,27 +67,40 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
 
         <div className="mt-10 grid gap-5 border-y border-[#111111]/10 py-5 text-xs uppercase text-[#111111]/65 lg:grid-cols-[1fr_auto] lg:items-center">
           <nav className="flex flex-wrap gap-x-8 gap-y-3">
-            {content.filters.map((filter, index) => (
-              <a
+            {content.filters.map((filter) => (
+              <button
                 key={filter}
-                href="#stories-grid"
-                className={index === 0 ? "text-[#111111]" : "luxury-link"}
+                type="button"
+                onClick={() => setActiveFilter(filter)}
+                className={activeFilter === filter ? "text-[#111111]" : "luxury-link"}
               >
                 {filter}
-              </a>
+              </button>
             ))}
           </nav>
           <nav className="flex flex-wrap gap-x-6 gap-y-3 lg:justify-end">
-            <span className="text-[#111111]">{content.yearsLabel}</span>
+            <button
+              type="button"
+              onClick={() => setActiveYear("")}
+              className={activeYear ? "luxury-link" : "text-[#111111]"}
+            >
+              {content.yearsLabel}
+            </button>
             {content.years.map((year) => (
-              <a key={year} href="#stories-grid" className="luxury-link">
+              <button
+                key={year}
+                type="button"
+                onClick={() => setActiveYear(year)}
+                className={activeYear === year ? "text-[#111111]" : "luxury-link"}
+              >
                 {year}
-              </a>
+              </button>
             ))}
           </nav>
         </div>
       </section>
 
+      {mainStory ? (
       <section className="mx-auto max-w-[1600px] px-4 py-14 md:px-8 md:py-20">
         <article className="grid gap-10 border-b border-[#111111]/10 pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
           <div className="relative aspect-[16/10] overflow-hidden bg-white">
@@ -111,8 +142,14 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
           </div>
         </article>
       </section>
+      ) : null}
 
       <section id="stories-grid" className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8 md:pb-32">
+        <div className="mb-8 text-xs uppercase text-[#111111]/45">
+          {locale === "en"
+            ? `${visibleStories.length} stories`
+            : `Історій: ${visibleStories.length}`}
+        </div>
         <div className="grid gap-8 md:grid-cols-3">
           {supportingStories.map((story) => {
             const storySlug = getStorySlug(story);
@@ -159,62 +196,13 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
             );
           })}
         </div>
-      </section>
-
-      <section className="border-y border-[#111111]/10">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:px-8 lg:grid-cols-[0.65fr_1.35fr]">
-          <div>
-            <p className="text-xs uppercase text-[#111111]/55">{mainStory.category}</p>
-            <h2 className="mt-5 font-serif text-4xl font-light uppercase leading-tight md:text-5xl">
-              {mainStory.title}
-            </h2>
+        {supportingStories.length === 0 && mainStory && (
+          <div className="border-t border-[#111111]/10 pt-10 text-sm text-[#111111]/55">
+            {locale === "en"
+              ? "No more stories match the selected filters."
+              : "За обраними фільтрами більше історій немає."}
           </div>
-          <div className="grid gap-7 text-xl font-light leading-9 text-[#111111]/72">
-            {mainStory.body.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <div className="grid gap-8 md:grid-cols-3">
-          {supportingStories.map((story) => {
-            const storySlug = getStorySlug(story);
-            const storySourceUrl = getStorySourceUrl(story);
-
-            return (
-              <article key={`${story.title}-body`} className="border-t border-[#111111]/10 pt-7">
-                <p className="mb-4 text-xs uppercase text-[#111111]/55">{story.category}</p>
-                <h3 className="font-serif text-3xl font-light uppercase leading-tight">
-                  {story.title}
-                </h3>
-                <div className="mt-6 grid gap-4 text-sm leading-7 text-[#111111]/65">
-                  {story.body.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-                {storySlug ? (
-                  <Link
-                    href={`${storiesBasePath}/${storySlug}`}
-                    className="luxury-link mt-6 inline-flex text-xs uppercase"
-                  >
-                    {content.readLabel}
-                  </Link>
-                ) : storySourceUrl ? (
-                  <a
-                    href={storySourceUrl}
-                    className="luxury-link mt-6 inline-flex text-xs uppercase"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {content.sourceLabel}
-                  </a>
-                ) : null}
-              </article>
-            );
-          })}
-        </div>
+        )}
       </section>
     </div>
   );

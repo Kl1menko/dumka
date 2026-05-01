@@ -6,579 +6,297 @@
 
 - Старий сайт: `https://nadiyadumka.com/`
 - Shopify-вітрина: `https://j06wf9-vp.myshopify.com/`
-- Актуальний сезонний фокус на 2026-04-18: колекція `Маки`, весна-літо 2026.
+- Актуальний сезонний фокус: колекція `Маки`, весна-літо 2026.
 - `GRONO` осінь-зима 2025/26 лишається архівною і медійною згадкою.
 
-## 1. Що Вже Зроблено
+---
+
+## 1. Архітектура проєкту
+
+### Route groups
+
+```
+app/
+  layout.tsx                  ← тільки html/body/fonts, без провайдерів
+  (storefront)/
+    layout.tsx                ← CartProvider + CurrencyProvider + SiteHeader + SiteFooter
+    page.tsx                  ← головна /
+    shop/                     ← /shop, /shop/[handle]
+    stories/                  ← /stories, /stories/[slug]
+    en/                       ← /en, /en/shop, /en/stories
+  admin/
+    login/page.tsx            ← /admin/login (поза protected layout)
+    (protected)/
+      layout.tsx              ← auth check → redirect /admin/login якщо немає сесії
+      page.tsx                ← /admin
+      new/page.tsx            ← /admin/new
+      [handle]/page.tsx       ← /admin/[handle]
+  api/                        ← route handlers (checkout, search, rates)
+```
+
+**Чому так:** `(storefront)/layout.tsx` ізолює SiteHeader/CartProvider від адмінки. `admin/(protected)/layout.tsx` ізолює авторизовані admin-сторінки від login. Скобки в назві групи не впливають на URL.
+
+### Джерело даних
+
+Дані товарів — **Supabase** (`lib/data.ts` читає з таблиць `products` і `product_variants`). Shopify залишається тільки як:
+- Джерело для первинної міграції (`scripts/migrate.ts`)
+- Checkout endpoint через Storefront API (`app/api/checkout/route.ts`)
+
+Shopify JSON endpoint (`products.json`) більше **не використовується** для вітрини.
+
+---
+
+## 2. Що Вже Зроблено
 
 ### Візуальний напрям
 
-- Задано преміальний quiet luxury стиль: чистий білий фон, чорний текст, багато negative space.
-- Основний фон усіх сторінок переведено на чистий білий `#FFFFFF`.
-- Відмовились від молочного/перлинного фону як базового кольору сторінок.
-- Типографіка побудована на парі `Cormorant Garamond` для editorial-заголовків і `Inter` для UI/body.
-- Товарні картки перероблені за логікою luxury ecommerce / Louis Vuitton reference: чиста product tile area, компактна назва, ціна, 2-колонкова mobile-сітка.
+- Преміальний quiet luxury стиль: білий фон `#FFFFFF`, чорний текст, багато negative space.
+- Типографіка: `Cormorant Garamond` для editorial-заголовків, `Inter` для UI/body.
+- Товарні картки: luxury ecommerce / Louis Vuitton reference — чиста product tile area, 2-колонкова mobile-сітка.
 - На desktop товарні картки мають hover-зміну зображення.
-- Product images у картках мають вміщатися повністю через `object-fit: contain`, без crop.
+- `object-fit: contain` на product images — виріб вміщається повністю без crop.
 
 ### Головна сторінка
 
-Файл: `app/page.tsx`
+Файл: `app/(storefront)/page.tsx`
 
-Реалізовано:
-
-- Hero на весь екран із фокусом на колекцію `Маки`.
-- Hero image береться з локального asset `public/images/hero-maky.jpg`.
-- На desktop hero image використовує `object-contain`, щоб модель не обрізалась; секція лишається `h-dvh`.
-- Hero section background має бути `bg-white`, щоб поля від `object-contain` не виглядали сірими.
-- Category cards section стоїть між hero і promo video: великі image cards у стилі fashion campaign grid, текст і CTA поверх фото по центру знизу. На mobile це horizontal snap slider із картками `84vw` і тонким progress bar під слайдером; на desktop — 3-column grid.
-- Promo video section під hero використовує локальний asset `public/videos/maky-promo.mp4`, autoplay muted loop playsInline, темний overlay і CTA на `/stories/maky-spring-summer-2026`.
-- Statement block про колекцію.
-- Блок `Весна - літо 2026` із продуктами з Shopify.
-- Асиметричні категорії: сукні, костюми, вечірній одяг.
-- Темна campaign/lookbook секція.
-- У campaign/lookbook секції фото використовує `object-contain` на білому фоні, щоб образ не обрізався.
-- Блок медіа.
-- Showroom block з адресою: вул. Шпитальна, 1, Львів, ТЦ "Магнус", 3-й поверх.
-- Категорійні плитки ведуть на `/shop` із відповідним query-фільтром.
+- Hero на весь екран із фокусом на колекцію `Маки`, локальний asset `public/images/hero-maky.jpg`.
+- Category cards section: horizontal snap slider на mobile (84vw + progress bar), 3-column grid на desktop.
+- Promo video: `public/videos/maky-promo.mp4`, autoplay muted loop, overlay + CTA на `/stories/maky-spring-summer-2026`.
+- Statement block, product grid (перші 6 товарів), категорії, lookbook, медіа, showroom.
+- Категорійні плитки ведуть на `/shop?category=...`.
 
 ### PLP / Каталог
 
-Файли:
+Файли: `app/(storefront)/shop/page.tsx`, `app/(storefront)/shop/CatalogClient.tsx`, `lib/catalog.ts`
 
-- `app/shop/page.tsx`
-- `app/shop/CatalogClient.tsx`
-- `app/shop/loading.tsx`
-- `lib/catalog.ts`
-
-Реалізовано:
-
-- Повноцінна сторінка `/shop`.
-- Product grid на базі існуючого `ProductCard`.
-- Категорії каталогу з українськими назвами і counts.
-- Нормалізація Shopify `product_type` у локальні категорії: сукні, костюми, блузи, вечірній одяг, жилети, топи, шорти, комбінезони, аксесуари, подарунки, інше.
+- Нормалізація `product_type` у локальні категорії з українськими назвами.
 - Сортування: рекомендоване, ціна від нижчої, ціна від вищої, назва А-Я.
-- Query params для стану каталогу: `category` і `sort`.
-- Desktop: sticky sidebar з категоріями і select сортування.
-- Mobile: bottom sheet drawer для категорій і сортування.
-- Empty state для категорій без товарів.
-- Loading skeleton для `/shop`.
-- Error state, якщо Shopify endpoint недоступний.
+- Desktop: sticky sidebar. Mobile: bottom sheet drawer.
+- Loading skeleton, empty state, error state.
 
 ### Header / Navigation
 
 Файл: `components/SiteHeader.tsx`
 
-Реалізовано:
-
-- Fixed header.
-- На головній сторінці до скролу хедер прозорий поверх hero.
-- Після скролу хедер стає білим із чорним текстом.
-- На внутрішніх сторінках хедер одразу білий із чорним текстом, щоб не губитися на світлих product-фото.
-- Drawer-меню, search drawer і cart drawer.
-- Header cart count синхронізується з реальним cart state.
-- Category links у drawer ведуть на реальний `/shop?category=...`.
-- Search drawer виконує реальний пошук через `/api/search` із debounce.
-- Header визначає locale з pathname (`/en...`) і перемикає UA/EN route.
-- У desktop header біля мов є компактна іконка вибору валюти (`₴`, `$`, `€`) з popover.
-- Внутрішній дизайн меню та списків зараз виглядає добре. Не змінювати без окремого запиту.
+- Fixed header, прозорий на home до скролу, білий на внутрішніх сторінках.
+- Drawer: меню, пошук (debounce 280ms → `/api/search`), кошик.
+- Перемикач мов UA/EN, перемикач валюти UAH/USD/EUR з курсом НБУ.
+- **Не чіпати drawer-меню без окремого запиту.**
 
 ### PDP / Product Detail Page
 
-Файли:
+Файли: `app/(storefront)/shop/[handle]/page.tsx`, `app/(storefront)/shop/[handle]/ProductClient.tsx`
 
-- `app/shop/[handle]/page.tsx`
-- `app/shop/[handle]/ProductClient.tsx`
-- `app/shop/[handle]/loading.tsx`
-- `app/shop/[handle]/error.tsx`
+- Snap rail фото на mobile, sticky purchase block на desktop.
+- Size chips, size guide modal, disabled unavailable sizes.
+- Accordions: опис, тканина/догляд, доставка/повернення.
+- Sticky bottom add-to-cart bar на mobile.
+- Add-to-cart → глобальний кошик → відкривається cart drawer.
+- Related products block (перші 3 інші).
 
-Реалізовано:
+### Cart / Checkout
 
-- Dynamic route `/shop/[handle]`.
-- SEO metadata для PDP формується з product title/body/images.
-- Великі product-фото.
-- На мобільному: горизонтальний snap rail для фото.
-- На desktop: sticky purchase block справа.
-- Size selector через клікабельні chips, не через select.
-- Size guide modal із таблицею XS-XL і showroom note.
-- Unavailable sizes disabled і показують статус “Немає в наявності”.
-- Accordions для опису, тканини/догляду, доставки/повернення.
-- Sticky bottom add-to-cart bar на мобільному.
-- Add-to-cart додає товар з обраним розміром у глобальний кошик і відкриває cart drawer.
-- `Complete the look` / related products block.
-- Loading skeleton для PDP.
-- Error boundary для PDP, якщо Shopify endpoint недоступний.
+Файли: `components/CartProvider.tsx`, `app/api/checkout/route.ts`
 
-### Cart state
-
-Файл: `components/CartProvider.tsx`
-
-Checkout route: `app/api/checkout/route.ts`
-
-Реалізовано:
-
-- Глобальний client provider навколо header, main і footer.
-- Збереження cart items у `localStorage` через ключ `dumka-cart-v1`.
-- Cart item містить `variantId`, `handle`, `title`, `image`, `size`, `price`, `priceNumber`, `quantity`.
-- Якщо додати той самий товар з тим самим розміром, збільшується `quantity`.
-- Header показує реальний total item count.
-- Cart drawer показує товари, кількість, subtotal і дозволяє збільшувати/зменшувати quantity або прибирати товар.
-- Checkout button викликає `/api/checkout`, створює Shopify Cart через Storefront API `cartCreate` і редіректить на `checkoutUrl`.
-- Для checkout потрібні env vars: `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, `SHOPIFY_STOREFRONT_API_VERSION`.
+- Cart у `localStorage` (`dumka-cart-v1`). Той самий товар+розмір → збільшується quantity.
+- Checkout: `cartCreate` через Shopify Storefront API → редирект на `checkoutUrl`.
+- Потрібен реальний `SHOPIFY_STOREFRONT_ACCESS_TOKEN` у `.env.local` для live checkout.
 
 ### Currency / Exchange Rates
 
-Файли:
+Файли: `components/CurrencyProvider.tsx`, `app/api/rates/route.ts`
 
-- `components/CurrencyProvider.tsx`
-- `lib/currency.ts`
-- `app/api/rates/route.ts`
-
-Реалізовано:
-
-- Глобальний currency provider навколо cart/header/main/footer.
-- Валюти: `UAH`, `USD`, `EUR`.
-- Ціни з Shopify лишаються базово в гривні через `priceNumber`.
-- Для display ціна конвертується з UAH у USD/EUR через офіційний курс НБУ.
-- `/api/rates` бере USD/EUR з `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=...&json`.
-- Курс кешується на 1 годину.
-- У menu drawer є перемикач валюти і дата курсу НБУ.
-- Обрана валюта зберігається в `localStorage` ключем `dumka-currency-v1`.
-- Desktop currency selector доступний у header біля перемикача мов; повний selector також є в menu drawer.
-- Checkout не використовує display currency: Shopify checkout рахує оплату за variant IDs і quantity.
-
-### Content / Localization
-
-Файл: `content/site.ts`
-
-Реалізовано:
-
-- Основний UI copy винесений у content config для `uk` і `en`.
-- Home page, catalog page, PDP labels/accordions/size guide і footer беруть тексти з `content/site.ts`.
-- `/en`, `/en/shop`, `/en/shop/[handle]` передають `locale="en"` у відповідні компоненти.
-- Product titles/descriptions поки беруться з Shopify як є.
+- UAH/USD/EUR. Ціни конвертуються з UAH через офіційний курс НБУ.
+- Курс кешується 1 годину. Обрана валюта зберігається в `localStorage`.
 
 ### Stories
 
+Файли: `app/(storefront)/stories/`, `content/stories.ts`
+
+- Editorial index: великий lowercase title, category/year filter, feature story, editorial cards.
+- Колекції: Маки 2026, GRONO 2025/26, КАЛИНА 2023, Окрилена Україною 2022, весна-літо 2021.
+- Detail pages для кожної колекції з hero, текстом, gallery, related.
+- EN aliases через `/en/stories/[slug]`.
+
+### Admin Panel
+
 Файли:
 
-- `app/stories/page.tsx`
-- `app/en/stories/page.tsx`
-- `app/stories/[slug]/page.tsx`
-- `app/en/stories/[slug]/page.tsx`
-- `components/StoriesPageContent.tsx`
-- `components/StoryDetailPageContent.tsx`
-- `content/stories.ts`
+- `app/admin/login/page.tsx` — login form, поза (protected) layout
+- `app/admin/(protected)/layout.tsx` — auth check, темний sidebar з навігацією
+- `app/admin/(protected)/page.tsx` — список продуктів з пагінацією
+- `app/admin/(protected)/new/page.tsx` — форма створення
+- `app/admin/(protected)/[handle]/page.tsx` — форма редагування
+- `app/admin/(protected)/_components/AdminProductList.tsx` — таблиця продуктів
+- `app/admin/(protected)/_components/AdminToolbar.tsx` — пошук + фільтри (client, URL params)
+- `app/admin/(protected)/loading.tsx` — skeleton
+- `lib/actions/products.ts` — server actions: create, update, delete, togglePublished, updateSortOrder, signOut
+- `lib/supabase/admin.ts` — service-role client (bypasses RLS)
+- `middleware.ts` — захист `/admin/*`
 
 Реалізовано:
 
-- Editorial Stories сторінка у форматі luxury house stories index: великий lowercase title, category/year filter row, feature story і editorial cards.
-- Основний story — колекція весна-літо 2026 “МАКИ” на базі бренд-опису.
-- Додано supporting stories: пам'ять у деталях, символ маку, тканини/емоція.
-- Додано архівні колекції з `https://nadiyadumka.com/kolekcziyi/`: весна-літо 2021, весна-літо 2022 “Окрилена Україною”, весна-літо 2023 “КАЛИНА”, осінь-зима 2025/26 “GRONO”.
-- Для архівних колекцій додано original source links на старі сторінки колекцій.
-- Для колекцій додано внутрішні detail pages:
-  - `/stories/maky-spring-summer-2026`
-  - `/stories/grono-autumn-winter-2025-26`
-  - `/stories/kalyna-spring-summer-2023`
-  - `/stories/okrylena-ukrainoyu-spring-summer-2022`
-  - `/stories/spring-summer-2021`
-- EN aliases працюють за тією самою slug-структурою через `/en/stories/[slug]`.
-- Detail pages мають editorial hero, великий текстовий блок, detail sections, gallery block, related collections і SEO metadata.
-- UA/EN версії через `content/stories.ts`.
-- Stories link додано в menu drawer і footer.
+- Login через Supabase email+password. Після успіху — `window.location.href = "/admin"` (full reload для session cookie).
+- Список: server-side пошук/фільтр (Supabase `.ilike`/`.eq`), 50 товарів на сторінку, числова пагінація.
+- Toolbar: пошук з debounce 350ms, фільтр по типу, фільтр по статусу — всі через URL params (`?q=&type=&status=&page=`).
+- Таблиця: sort_order inline input (бейдж жовтіє при зміні, з'являється Save order banner), toggle published, Edit лінк, Delete з confirm.
+- Форма продукту: title → auto-slug, body HTML, product_type, tags, image URLs (one-per-line з preview), sort_order, published toggle, варіанти (size / color / price_uah / available).
+- "View on site ↗" з форми редагування.
+- Після збереження — `window.location.href = "/admin"` (навігація через full reload).
+- signOut використовує session-based `createClient()`, не admin client.
+
+Важливо:
+
+- `createAdminClient()` (service_role) — тільки для CRUD товарів, bypasses RLS.
+- `createClient()` з `lib/supabase/server.ts` — для auth перевірок (layout, signOut).
+- Ніколи не використовувати admin client для auth операцій.
 
 ### Технічна база
 
-- Next.js App Router.
-- React 19.
-- Tailwind v4.
-- Дані товарів беруться з Shopify JSON endpoint.
-- Курси валют беруться з офіційного API НБУ.
-- Додано `README.md` із командами запуску.
-- Додано git repo і push у `https://github.com/Kl1menko/dumka.git`.
-- Додано clean scripts, щоб уникати зламаних `.next` chunks.
+- Next.js 15, App Router, React 19, Tailwind v4.
+- Supabase (PostgreSQL) — джерело даних для вітрини і адмін.
+- Shopify Storefront API — тільки checkout.
+- Курси НБУ API — конвертація валют.
 
-## 2. Що Ще Треба Зробити
+---
 
-### Високий пріоритет
+## 3. Що Треба Зробити
 
-- Додати production Storefront API token у env і перевірити checkout на live Shopify.
+### Критично (без цього сайт не готовий до продажів)
 
-### Середній пріоритет
+1. **Shopify Storefront Access Token** — замінити `MY_SHOPIFY_STOREFRONT_ACCESS_TOKEN` у `.env.local` реальним токеном. Без нього checkout повертає помилку. Токен: Shopify Admin → Settings → Apps → Develop apps → вибрати або створити app → Storefront API → `unauthenticated_read_*` scopes.
 
-- Додати системні сторінки: delivery, returns, contacts/showroom, media.
+2. **product_type для 252 товарів** — після міграції з Shopify усі `product_type` порожні. Потрібно або масово проставити через SQL в Supabase, або через адмінку вручну. Без цього фільтри у каталозі `/shop?category=...` не працюють коректно.
 
-### Низький пріоритет
+### Важливо (функціонал магазину)
 
-- Додати wishlist.
-- Додати recently viewed.
-- Додати media links на реальні статті.
-- Додати animations on scroll.
-- Оптимізувати images через `next/image`, якщо домени Shopify будуть стабільно додані в `next.config.mjs`.
+3. **Системні сторінки** — delivery, returns, contacts/showroom, media. Зараз footer посилається на них, але сторінок немає (404).
 
-## 3. Як Працюють Дані
+4. **Image upload в адмінці** — зараз треба вставляти URL вручну. Краще додати upload до Supabase Storage або Cloudinary, щоб адмін міг завантажувати фото напряму.
 
-### Product types
+5. **Перевірити checkout end-to-end** — після додавання реального токена пройти повний шлях: додати у кошик → checkout → Shopify payment.
 
-Файл: `lib/types.ts`
+### Середній пріоритет (покращення UX)
 
-Є два головні типи:
+6. **Drag-and-drop сортування в адмінці** — зараз sort_order редагується числами. Drag-and-drop через `@dnd-kit/core` або `react-beautiful-dnd` був би зручнішим для переупорядкування 252 товарів.
 
-- `ProductVariant`
-- `Product`
+7. **Bulk actions в адмінці** — чекбокси для вибору кількох товарів → bulk publish/unpublish/delete. Зараз тільки поодинці.
 
-`ProductVariant` описує один варіант товару:
+8. **Related products за логікою** — зараз перші 3 інші товари. Краще показувати товари з того ж `product_type`.
 
-- `id`: Shopify Storefront merchandise id, формат `gid://shopify/ProductVariant/...`
-- `title`: назва варіанта, наприклад `S / Black`
-- `price`: відформатована ціна
-- `priceNumber`: числова ціна для сортування або обчислень
-- `size`: значення `option1` із Shopify
-- `color`: значення `option2` із Shopify
-- `available`: доступність варіанта
+9. **APP_URL у `.env.local`** — замінити `MY_APP_URL` реальним доменом (потрібно для Open Graph метаданих).
 
-`Product` описує товар:
+### Низький пріоритет (nice to have)
 
-- `handle`: slug для URL `/shop/[handle]`
-- `title`: назва товару
-- `bodyHtml`: HTML-опис із Shopify
-- `images`: масив image URLs
-- `variants`: масив варіантів
-- `price`: мінімальна ціна серед variants
-- `priceNumber`: числова мінімальна ціна для сортування
-- `productType`: Shopify `product_type`, використовується каталогом
-- `tags`: Shopify tags, резерв для майбутньої категоризації
+10. **Wishlist** — зберігати в `localStorage`, кнопка на product card і PDP.
 
-### Fetching products
+11. **Recently viewed** — останні 6 переглянутих товарів у блоці на PDP або в окремій сторінці.
 
-Файл: `lib/data.ts`
+12. **Scroll animations** — fade-up reveal на секціях головної. CSS-based через `IntersectionObserver` або Framer Motion.
 
-`getProducts()`:
+13. **next/image оптимізація** — додати Shopify CDN домени в `next.config.mjs` → `remotePatterns`, перейти з `<img>` на `<Image>`.
 
-1. Робить fetch на `https://j06wf9-vp.myshopify.com/products.json?limit=250`.
-2. Використовує Next revalidate `3600`, тобто кеш оновлюється раз на годину.
-3. Дістає `json.products`.
-4. Мапить Shopify product shape у локальний `Product`.
-5. Форматує ціни через `Intl.NumberFormat("uk-UA")`.
-6. Визначає default price як найнижчу ціну серед variants.
-7. Зберігає числову мінімальну ціну, `product_type` і `tags`.
-8. Якщо сталася помилка, повертає порожній масив.
+14. **Media links** — реальні посилання на статті в Stories і footer.
 
-`getProductsResult()`:
+---
 
-1. Робить той самий fetch і mapping.
-2. Повертає `{ products, error }`.
-3. Використовується там, де UI має показати явний error state замість порожнього каталогу.
+## 4. Як Працюють Дані
 
-`getProductByHandle(handle)`:
+### Supabase schema
 
-1. Викликає `getProducts()`.
-2. Шукає товар за `product.handle`.
-3. Повертає `Product | undefined`.
+Таблиці: `products`, `product_variants`. Schema: `supabase/schema.sql`.
 
-Зараз `getProductByHandle` лишився як helper, але PDP route напряму бере весь список продуктів, щоб одразу сформувати `relatedProducts`.
+RLS: анонімні читають тільки `published = true`. Authenticated (admin) мають повний доступ. Service_role bypasses RLS.
 
-## 4. Як Працюють Сторінки
+### lib/data.ts
 
-### Root layout
+Читає з Supabase через `createClient()` (server, anon key + RLS).
 
-Файл: `app/layout.tsx`
+- `getProducts()` — повертає `Product[]` (тільки published).
+- `getProductsResult()` — повертає `{ products, error }` для сторінок з explicit error state.
+- `getProductByHandle(handle)` — один продукт за handle (тільки published).
 
-Відповідає за:
+### Типи
 
-- global fonts через `next/font/google`
-- global CSS import
-- metadata
-- `CartProvider`
-- `SiteHeader`
-- `<main>{children}</main>`
-- footer з showroom/contact/subscription info.
+`lib/types.ts` — `Product` і `ProductVariant`. Variant містить: `id`, `title`, `price`, `priceNumber`, `size`, `color`, `available`.
 
-Важливо: body має `bg-white`, тому будь-які нові сторінки автоматично стартують із чистого білого фону.
+---
 
-### Home page
+## 5. Як Працюють Ключові Компоненти
 
-Файл: `app/page.tsx`
+### SiteHeader (`components/SiteHeader.tsx`)
 
-Це server component.
+Client component. State: `drawer` (menu/search/cart/null), `scrolled`. На home до скролу прозорий. Не чіпати drawer стилі без окремого запиту.
 
-Логіка:
+### ProductCard (`components/ProductCard.tsx`)
 
-1. Викликає `getProducts()`.
-2. Бере перші 6 товарів для home product grid.
-3. Використовує локальний `heroImage` `/images/hero-maky.jpg`.
-4. Формує категорії з перших доступних product images.
-5. Рендерить секції:
-   - hero
-   - statement
-   - collection grid
-   - category grid
-   - lookbook
-   - media
-   - showroom
+Client component. `images[0]` — cover, `images[1]` — hover. Ціна через `useCurrency().formatPrice()`. CSS: `.product-tile-*` у `globals.css`.
 
-### Catalog page
+### AdminToolbar (`app/admin/(protected)/_components/AdminToolbar.tsx`)
 
-Файл: `app/shop/page.tsx`
+Client component. Пошук з debounce 350ms → оновлює URL params → server re-render сторінки з filtered Supabase query.
 
-Це server component.
-
-Логіка:
-
-1. Await `searchParams`, бо у Next.js 15 route params/search params асинхронні.
-2. Викликає `getProducts()`.
-3. Нормалізує `category` і `sort` через `lib/catalog.ts`.
-4. Рахує кількість товарів у кожній категорії.
-5. Передає продукти, початковий фільтр, початкове сортування і counts у `CatalogClient`.
-
-### Product route
-
-Файл: `app/shop/[handle]/page.tsx`
-
-Це server component.
-
-Логіка:
-
-1. `generateStaticParams()` бере всі продукти з Shopify.
-2. Для кожного продукту створює static route `{ handle }`.
-3. `ProductPage()` отримує `params.handle`.
-4. Знаходить product у списку.
-5. Якщо товар не знайдено, викликає `notFound()`.
-6. Формує `relatedProducts` як перші 3 товари, окрім поточного.
-7. Передає все в client component `ProductClient`.
-
-`generateMetadata()`:
-
-1. Await `params`.
-2. Знаходить product за `handle`.
-3. Формує title, description і Open Graph image з Shopify product data.
-
-## 5. Як Працюють Компоненти
-
-### SiteHeader
-
-Файл: `components/SiteHeader.tsx`
-
-Це client component, бо використовує:
-
-- `useState`
-- `useEffect`
-- `usePathname`
-- scroll listener
-
-State:
-
-- `drawer`: може бути `menu`, `search`, `cart` або `null`.
-- `scrolled`: `true`, якщо `window.scrollY > 24`.
-
-Route logic:
-
-- `pathname === "/"` означає home.
-- `solidHeader = scrolled || !isHome`.
-- На home до скролу хедер прозорий і білий.
-- На home після скролу хедер білий із чорним текстом.
-- На будь-якій внутрішній сторінці хедер одразу білий із чорним текстом.
-
-Drawer logic:
-
-- Клік по `Меню` або `Пошук` ставить відповідне значення в local `drawer`.
-- Клік по `Кошик` відкриває cart drawer через `CartProvider`.
-- Overlay з'являється, якщо відкритий menu/search drawer або cart drawer.
-- Клік по overlay або `Закрити` закриває активний drawer.
-- Drawers рухаються через Tailwind classes `translate-x-0` / `translate-x-full`.
-
-Search logic:
-
-- Search drawer має local `searchQuery`, `searchResults`, `searchLoading`, `searchError`.
-- Пошук стартує після 2 символів із debounce 280ms.
-- `/api/search` викликає `getProductsResult()` і шукає по title, product type, tags і stripped bodyHtml.
-- Якщо Shopify недоступний, `/api/search` повертає `503`, а drawer показує error text.
-- Результати ведуть на `/shop/[handle]`.
-
-Localization flow:
-
-- Locale helper: `lib/i18n.ts`.
-- Українські routes лишаються базовими: `/`, `/shop`, `/shop/[handle]`.
-- English aliases додані як `/en`, `/en/shop`, `/en/shop/[handle]`.
-- Header, search drawer і cart drawer використовують locale-aware labels і links.
-- Product titles/descriptions поки беруться з Shopify як є.
-
-Важливо: внутрішні стилі menu drawer зараз вважаються approved. Не чіпати без окремого запиту.
-
-### ProductCard
-
-Файл: `components/ProductCard.tsx`
-
-Це client component, але зараз не має state. Він лишається client через попередню структуру і можливий hover/client UI розвиток.
-
-Логіка:
-
-1. Береться `product.images[0]` як основне фото.
-2. Якщо його немає, використовується fallback Shopify image.
-3. `product.images[1]` використовується як hover image.
-4. Якщо другого фото немає, hover image дорівнює main image.
-5. Вся картка є `Link` на `/shop/${product.handle}`.
-6. На desktop hover плавно перемикає main image на alternate image.
-7. Зображення в картках використовують `object-fit: contain`, щоб виріб вміщався повністю.
-8. Ціна показується через `useCurrency().formatPrice(product.priceNumber)`.
-9. На мобільному картки компактні, по 2 в ряд.
-
-CSS для картки лежить у `app/globals.css`:
-
-- `.product-tile-media`
-- `.product-tile-image`
-- `.product-tile-action`
-
-### ProductClient
-
-Файл: `app/shop/[handle]/ProductClient.tsx`
-
-Це client component, бо має local UI state.
-
-State:
-
-- `sizeGuideOpen`: чи відкритий size guide modal.
-- `selectedSize`: активний розмір. Початкове значення — перший доступний size.
-
-Computed values:
-
-- `sizeOptions`: унікальні `variant.size` із product variants разом із availability.
-- `selectedVariant`: перший variant для активного розміру.
-- `canAddToCart`: `false`, якщо активний розмір недоступний.
-- `images`: product images або fallback image.
-
-Mobile image rail:
-
-- На mobile контейнер має horizontal scroll.
-- Кожне фото має `snap-center`.
-- Фото займає приблизно `86vw`.
-- Лічильник `i + 1 / images.length` показується тільки на mobile.
-
-Desktop product layout:
-
-- Зліва великі фото.
-- Справа sticky purchase/info block.
-- Add-to-cart button показується в правому блоці тільки від `md`.
-
-Mobile add-to-cart:
-
-- На mobile основна кнопка винесена в fixed bottom bar.
-- Bar показує назву товару, ціну і CTA.
-
-Cart drawer:
-
-- Клік по add-to-cart викликає `addProduct(product, selectedSize)` з `CartProvider`.
-- Cart drawer тепер глобальний і відкривається з provider.
-
-### CatalogClient
-
-Файл: `app/shop/CatalogClient.tsx`
-
-Це client component, бо має local UI state.
-
-State:
-
-- `category`: активна категорія.
-- `sort`: активне сортування.
-- `filtersOpen`: чи відкритий mobile filter drawer.
-
-Логіка:
-
-- Фільтрація і сортування працюють на клієнті поверх уже завантажених Shopify products.
-- При зміні category/sort оновлюється URL через `router.replace`.
-- На desktop controls показуються як sticky sidebar і select.
-- На mobile controls відкриваються bottom sheet drawer.
+---
 
 ## 6. CSS / UI Primitives
 
 Файл: `app/globals.css`
 
-Глобальні primitives:
-
-- `.luxury-link`: uppercase link із hover underline.
-- `.primary-button`: чорна кнопка з білим текстом.
-- `.ghost-button`: прозора кнопка з тонкою рамкою.
-- `.floating-field`: input із нижньою лінією і floating label.
-- `.reveal`: fade-up animation.
-- `.product-tile-*`: товарні плитки.
-- `.mobile-product-rail`: приховує scrollbar на mobile horizontal rail.
+- `.luxury-link` — uppercase hover underline
+- `.primary-button` — чорна кнопка
+- `.ghost-button` — прозора з рамкою
+- `.floating-field` — input із floating label
+- `.reveal` — fade-up animation
+- `.product-tile-*` — товарні плитки
+- `.mobile-product-rail` — приховує scrollbar на mobile rail
 
 Правила:
 
-- Базовий фон сторінок тільки `#FFFFFF`.
-- Не повертати молочний фон як body/page background.
-- Темні секції дозволені тільки як editorial/campaign block.
-- Кнопки мають лишатися з мінімальним radius.
+- Базовий фон **тільки `#FFFFFF`**. Молочний фон не повертати.
+- Темні секції — тільки editorial/campaign блоки.
+- Кнопки — мінімальний radius.
+- Жодних sale-плашок, яскравих badges, агресивних CTA.
 
-## 7. Поточні Обмеження
+---
 
-- Checkout flow реалізований, але потребує реальний `SHOPIFY_STOREFRONT_ACCESS_TOKEN` у env для production-перевірки.
-- Product description вставляється через `dangerouslySetInnerHTML`, бо Shopify повертає HTML. Треба бути обережними, якщо джерело даних зміниться.
-- Related products зараз обираються просто як перші 3 інші товари, без логіки категорій або образів.
-
-## 8. Команди Для Роботи
-
-Встановлення:
+## 7. Команди
 
 ```bash
-npm install
+npm install          # встановлення
+npm run dev:clean    # dev server (з очищенням .next)
+npm run build:clean  # production build перевірка
+npm run clean        # очистити .next cache
+npm run migrate      # завантажити товари з Shopify у Supabase (безпечно повторювати)
 ```
 
-Dev server:
+**Важливо:** не запускати `next build` поки відкритий `next dev` — обидва пишуть у `.next`.
 
-```bash
-npm run dev:clean
+---
+
+## 8. Git / Deploy
+
+```
+Remote: https://github.com/Kl1menko/dumka.git
+Branch: main
 ```
 
-Production build check:
-
 ```bash
-npm run build:clean
-```
-
-Очистити Next cache:
-
-```bash
-npm run clean
-```
-
-Важливо: не запускати `next build`, поки відкритий `next dev` у цьому ж проєкті. Next.js пише dev і build output в одну папку `.next`, через що можуть виникати помилки на кшталт `Cannot find module './222.js'`.
-
-## 9. Git / Deploy Notes
-
-Remote repository:
-
-```bash
-https://github.com/Kl1menko/dumka.git
-```
-
-Основна гілка:
-
-```bash
-main
-```
-
-Після змін:
-
-```bash
-git status
 git add .
-git commit -m "Describe change"
+git commit -m "description"
 git push
 ```
 
-Перед push бажано запускати:
+Перед push: `npm run build:clean`.
 
-```bash
-npm run build:clean
-```
+---
 
-## 10. Правила Для Наступних Змін
+## 9. Правила для Майбутніх Змін
 
-- Не чіпати внутрішній дизайн drawer-меню без окремого запиту.
+- Не чіпати drawer-меню без окремого запиту.
 - Не повертати молочний фон.
-- Не робити мас-маркетні sale-плашки, яскраві badges або агресивні CTA.
-- Product cards тримати компактними, чистими і mobile-first.
-- PDP має лишатися максимально візуальним: фото першочергові, інформація зібрана і не перевантажена.
-- Якщо додається нова логіка, коротко оновити цей файл у секціях “Що вже зроблено” і “Що ще треба зробити”.
+- Не робити мас-маркетні sale-плашки або агресивні CTA.
+- Product cards — компактні, чисті, mobile-first.
+- PDP — фото першочергові.
+- Admin — `createAdminClient()` тільки для CRUD, `createClient()` для auth.
+- При додаванні нової логіки — оновити цей файл у секціях 2 і 3.
