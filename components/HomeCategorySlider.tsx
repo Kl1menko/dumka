@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type HomeCategory = {
   title: string;
@@ -16,41 +16,41 @@ export function HomeCategorySlider({
   cta: string;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
+  const thumbRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
+    const thumb = thumbRef.current;
 
-    if (!scroller) {
-      return;
-    }
+    if (!scroller || !thumb) return;
 
-    const updateProgress = () => {
+    const update = () => {
       const maxScroll = scroller.scrollWidth - scroller.clientWidth;
-      setProgress(maxScroll > 0 ? scroller.scrollLeft / maxScroll : 0);
+      const progress = maxScroll > 0 ? scroller.scrollLeft / maxScroll : 0;
+      thumb.style.transform = `translateX(${progress * (categories.length - 1) * 100}%)`;
     };
 
-    updateProgress();
-    scroller.addEventListener("scroll", updateProgress, { passive: true });
-    window.addEventListener("resize", updateProgress);
+    update();
+    scroller.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
 
     return () => {
-      scroller.removeEventListener("scroll", updateProgress);
-      window.removeEventListener("resize", updateProgress);
+      scroller.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [categories.length]);
 
   return (
     <section className="overflow-hidden bg-white py-3 md:px-6 md:py-6">
       <div
         ref={scrollerRef}
-        className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 [scrollbar-width:none] md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 [scrollbar-width:none] md:justify-center md:gap-5 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden"
       >
         {categories.map((category) => (
           <a
             href={category.href}
             key={category.title}
-            className="group relative block min-h-[520px] min-w-[84vw] snap-center overflow-hidden bg-[#111111] md:min-h-[680px] md:min-w-0"
+            className="group relative block aspect-[3/5] min-w-[70vw] max-h-[85svh] flex-shrink-0 snap-center overflow-hidden bg-[#111111] md:max-h-none md:min-w-0 md:w-[360px] lg:w-[420px] xl:w-[480px]"
           >
             <img
               src={category.image}
@@ -73,11 +73,9 @@ export function HomeCategorySlider({
 
       <div className="mx-auto mt-4 h-px w-28 bg-[#111111]/18 md:hidden">
         <div
-          className="h-px bg-[#111111] transition-transform duration-150"
-          style={{
-            width: `${100 / categories.length}%`,
-            transform: `translateX(${progress * (categories.length - 1) * 100}%)`,
-          }}
+          ref={thumbRef}
+          className="h-px bg-[#111111] will-change-transform"
+          style={{ width: `${100 / categories.length}%` }}
         />
       </div>
     </section>

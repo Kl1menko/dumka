@@ -46,9 +46,9 @@ export const storiesContent = {
         category: "Колекції",
         year: "2026",
         title: "Колекція весна-літо 2026 “МАКИ”",
-        image: "/images/hero-maky.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-42.jpg?v=1775111044",
         excerpt:
-          "Колекція “МАКИ” — це історія про пам'ять, силу й любов, що не має кінця. Це не просто одяг, а форма тиші, яка говорить голосніше за слова.",
+          "Колекція про відродження, жіночність і силу, що розквітає навіть після найскладніших сезонів. У центрі — символ маку: пам'ять, краса та ніжна незламність.",
         body: [
           "Це мистецтво, у якому кожен образ несе в собі відлуння серця нації.",
           "Колекція “МАКИ” — це присвята. Не часу. Не трендам. А людям.",
@@ -74,7 +74,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "/images/hero-maky.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-42.jpg?v=1775111044",
           "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/d_lb_i-132.jpg?v=1776528884",
           "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8894BFF2-9092-44EF-8B8D-CEBFCE127414.jpg?v=1776547996",
         ],
@@ -84,9 +84,9 @@ export const storiesContent = {
         category: "Колекції",
         year: "2025",
         title: "Колекція осінь-зима 2025/26 “GRONO”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-fall-winter_2025.jpg?v=1774473552",
         excerpt:
-          "Історія про класику, елегантність і витончену красу, що розкриває внутрішню силу та шляхетність жінки.",
+          "Колекція «Grono» — це історія про класику, елегантність та вишукану красу, здатну розкрити внутрішню силу та благородство кожної жінки. Це не просто одяг, а мистецтво створення образу.",
         body: [
           "Силуетні піджаки, сукні, спідниці та блузи створені для стриманої розкоші, гармонії форм і тонкого відчуття стилю.",
           "Ключовий елемент колекції — виноградне гроно як символ єдності, родинних зв'язків і життєвої енергії.",
@@ -107,8 +107,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-fall-winter_2025.jpg?v=1774473552",
         ],
         sourceUrl: "https://nadiyadumka.com/kolektsiia-osin-zyma-2025-26-grono/",
       },
@@ -151,9 +150,9 @@ export const storiesContent = {
         category: "Колекції",
         year: "2023",
         title: "Колекція весна-літо 2023 “КАЛИНА”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2023.jpg?v=1774472844",
         excerpt:
-          "Калина постає символом життєвої сили, єдності та незламності, а авторська вишивка працює як декоративний оберіг.",
+          "Вражає глибокою символікою та естетичною майстерністю. Калина символізує життєву силу, єдність та непереможність — і уособлює стійкість жінок, які підтримують одна одну.",
         body: [
           "Колекція поєднує символізм української культури з вишуканими тканинами та авторським принтом.",
           "Кожен образ передає жіночність, силу й пам'ять про тих, хто віддав життя за незалежність України.",
@@ -169,8 +168,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2023.jpg?v=1774472844",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2023-kalyna/",
       },
@@ -179,9 +177,9 @@ export const storiesContent = {
         category: "Колекції",
         year: "2022",
         title: "Колекція весна-літо 2022 “Окрилена Україною”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2022.webp?v=1774472628",
         excerpt:
-          "Колекція про дух українського народу, любов до рідної землі та нескорену віру в перемогу.",
+          "Відображає дух українського народу, любов до рідної землі та незламну віру в перемогу. Кожен елемент — символ натхненної любові до України.",
         body: [
           "У кожному образі присутні крила — символи віри, свободи та сили рухатися вперед.",
           "Патріотичні кольори й енергія колекції говорять про надію, гідність і спільну мету.",
@@ -197,8 +195,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2022.webp?v=1774472628",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2022-okrylena-ukrayinoyu/",
       },
@@ -207,7 +204,7 @@ export const storiesContent = {
         category: "Колекції",
         year: "2021",
         title: "Колекція весна-літо 2021",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2021.jpg?v=1774472275",
         excerpt:
           "Аристократична весняно-літня колекція, присвячена 150-річчю Лесі Українки.",
         body: [
@@ -225,8 +222,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2021.jpg?v=1774472275",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2021/",
       },
@@ -248,7 +244,7 @@ export const storiesContent = {
         category: "Collections",
         year: "2026",
         title: "Spring-Summer 2026 Collection “MAKY”",
-        image: "/images/hero-maky.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-42.jpg?v=1775111044",
         excerpt:
           "The Maky collection is a story of memory, strength, and love without an end. It is not simply clothing, but a form of silence that speaks louder than words.",
         body: [
@@ -276,7 +272,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "/images/hero-maky.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-42.jpg?v=1775111044",
           "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/d_lb_i-132.jpg?v=1776528884",
           "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8894BFF2-9092-44EF-8B8D-CEBFCE127414.jpg?v=1776547996",
         ],
@@ -286,7 +282,7 @@ export const storiesContent = {
         category: "Collections",
         year: "2025",
         title: "Autumn-Winter 2025/26 Collection “GRONO”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-fall-winter_2025.jpg?v=1774473552",
         excerpt:
           "A story of classic elegance and refined beauty, revealing the inner strength and nobility of a woman.",
         body: [
@@ -309,8 +305,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/06/IMG_5664-1-640x800.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-fall-winter_2025.jpg?v=1774473552",
         ],
         sourceUrl: "https://nadiyadumka.com/kolektsiia-osin-zyma-2025-26-grono/",
       },
@@ -353,7 +348,7 @@ export const storiesContent = {
         category: "Collections",
         year: "2023",
         title: "Spring-Summer 2023 Collection “KALYNA”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2023.jpg?v=1774472844",
         excerpt:
           "Kalyna appears as a symbol of life force, unity, and resilience, while signature embroidery works like a protective ornament.",
         body: [
@@ -371,8 +366,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1390-533x800.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2023.jpg?v=1774472844",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2023-kalyna/",
       },
@@ -381,7 +375,7 @@ export const storiesContent = {
         category: "Collections",
         year: "2022",
         title: "Spring-Summer 2022 Collection “Inspired By Ukraine”",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2022.webp?v=1774472628",
         excerpt:
           "A collection about the spirit of the Ukrainian people, love for native land, and unbroken faith in victory.",
         body: [
@@ -399,8 +393,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_1196-533x800.jpeg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2022.webp?v=1774472628",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2022-okrylena-ukrayinoyu/",
       },
@@ -409,7 +402,7 @@ export const storiesContent = {
         category: "Collections",
         year: "2021",
         title: "Spring-Summer 2021 Collection",
-        image: "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
+        image: "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2021.jpg?v=1774472275",
         excerpt:
           "An aristocratic spring-summer collection dedicated to the 150th anniversary of Lesya Ukrainka.",
         body: [
@@ -427,8 +420,7 @@ export const storiesContent = {
           },
         ],
         gallery: [
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
-          "https://nadiyadumka.com/wp-content/uploads/2025/04/IMG_8036.jpg",
+          "https://www.nadiyadumka.com/cdn/shop/files/dumka-spring-summer-2021.jpg?v=1774472275",
         ],
         sourceUrl: "https://nadiyadumka.com/kolekcziya-vesna-lito-2021/",
       },

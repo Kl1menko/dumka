@@ -193,6 +193,18 @@ button {
   }
 }
 
+@keyframes scroll-line {
+  0% { transform: translateY(-100%); opacity: 1; }
+  60% { transform: translateY(100%); opacity: 1; }
+  61% { opacity: 0; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 /* Custom minimal scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

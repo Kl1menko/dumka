@@ -61,7 +61,7 @@ Shopify JSON endpoint (`products.json`) більше **не використов
 Файл: `app/(storefront)/page.tsx`
 
 - Hero на весь екран із фокусом на колекцію `Маки`, локальний asset `public/images/hero-maky.jpg`.
-- Category cards section: horizontal snap slider на mobile (84vw + progress bar), 3-column grid на desktop.
+- Category cards section: horizontal snap slider на mobile (70vw + progress bar), на desktop — flex justify-center з фіксованою шириною карток (360px/420px/480px md/lg/xl) і пропорцією `aspect-[3/5]`. Фото `object-cover`, картки портретні. Фото беруться з CDN nadiyadumka.com — актуальні URL у `content/site.ts` → `categoryImages`.
 - Promo video: `public/videos/maky-promo.mp4`, autoplay muted loop, overlay + CTA на `/stories/maky-spring-summer-2026`.
 - Statement block, product grid (перші 6 товарів), категорії, lookbook, медіа, showroom.
 - Категорійні плитки ведуть на `/shop?category=...`.
@@ -119,6 +119,15 @@ Shopify JSON endpoint (`products.json`) більше **не використов
 - Detail pages для кожної колекції з hero, текстом, gallery, related.
 - EN aliases через `/en/stories/[slug]`.
 
+### Системні сторінки (Доставка / Повернення)
+
+Файли: `app/(storefront)/delivery/page.tsx`, `app/(storefront)/returns/page.tsx`, `/en/delivery`, `/en/returns`
+
+- Обидві сторінки реалізовані для uk і en локалей.
+- `/delivery` — доставка по Україні, міжнародна, оплата, умови повернення в резюме, шоурум.
+- `/returns` — окрема детальна сторінка з 4 кроками ініціювання повернення.
+- Footer і product accordion посилаються на ці сторінки коректно.
+
 ### Admin Panel
 
 Файли:
@@ -171,33 +180,31 @@ Shopify JSON endpoint (`products.json`) більше **не використов
 
 ### Важливо (функціонал магазину)
 
-3. **Системні сторінки** — delivery, returns, contacts/showroom, media. Зараз footer посилається на них, але сторінок немає (404).
+6. **Image upload в адмінці** — зараз треба вставляти URL вручну. Краще додати upload до Supabase Storage або Cloudinary, щоб адмін міг завантажувати фото напряму.
 
-4. **Image upload в адмінці** — зараз треба вставляти URL вручну. Краще додати upload до Supabase Storage або Cloudinary, щоб адмін міг завантажувати фото напряму.
-
-5. **Перевірити checkout end-to-end** — після додавання реального токена пройти повний шлях: додати у кошик → checkout → Shopify payment.
+7. **Перевірити checkout end-to-end** — після додавання реального токена пройти повний шлях: додати у кошик → checkout → Shopify payment.
 
 ### Середній пріоритет (покращення UX)
 
-6. **Drag-and-drop сортування в адмінці** — зараз sort_order редагується числами. Drag-and-drop через `@dnd-kit/core` або `react-beautiful-dnd` був би зручнішим для переупорядкування 252 товарів.
+8. **Drag-and-drop сортування в адмінці** — зараз sort_order редагується числами. Drag-and-drop через `@dnd-kit/core` або `react-beautiful-dnd` був би зручнішим для переупорядкування 252 товарів.
 
-7. **Bulk actions в адмінці** — чекбокси для вибору кількох товарів → bulk publish/unpublish/delete. Зараз тільки поодинці.
+9. **Bulk actions в адмінці** — чекбокси для вибору кількох товарів → bulk publish/unpublish/delete. Зараз тільки поодинці.
 
-8. **Related products за логікою** — зараз перші 3 інші товари. Краще показувати товари з того ж `product_type`.
+10. **Related products за логікою** — зараз перші 3 інші товари. Краще показувати товари з того ж `product_type`.
 
-9. **APP_URL у `.env.local`** — замінити `MY_APP_URL` реальним доменом (потрібно для Open Graph метаданих).
+11. **APP_URL у `.env.local`** — замінити `MY_APP_URL` реальним доменом (потрібно для Open Graph метаданих).
 
 ### Низький пріоритет (nice to have)
 
-10. **Wishlist** — зберігати в `localStorage`, кнопка на product card і PDP.
+12. **Wishlist** — зберігати в `localStorage`, кнопка на product card і PDP.
 
-11. **Recently viewed** — останні 6 переглянутих товарів у блоці на PDP або в окремій сторінці.
+13. **Recently viewed** — останні 6 переглянутих товарів у блоці на PDP або в окремій сторінці.
 
-12. **Scroll animations** — fade-up reveal на секціях головної. CSS-based через `IntersectionObserver` або Framer Motion.
+14. **Scroll animations** — fade-up reveal на секціях головної. CSS-based через `IntersectionObserver` або Framer Motion.
 
-13. **next/image оптимізація** — додати Shopify CDN домени в `next.config.mjs` → `remotePatterns`, перейти з `<img>` на `<Image>`.
+15. **next/image оптимізація** — додати Shopify CDN домени в `next.config.mjs` → `remotePatterns`, перейти з `<img>` на `<Image>`.
 
-14. **Media links** — реальні посилання на статті в Stories і footer.
+16. **Media links** — реальні посилання на статті в Stories і footer.
 
 ---
 

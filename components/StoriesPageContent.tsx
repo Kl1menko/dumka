@@ -61,7 +61,7 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
   return (
     <div className="min-h-screen bg-white pt-28 md:pt-36">
       <section className="mx-auto max-w-[1600px] px-4 md:px-8">
-        <h1 className="font-serif text-6xl font-light lowercase leading-none md:text-8xl">
+        <h1 className="font-serif text-5xl font-light lowercase leading-none md:text-7xl">
           {content.title}
         </h1>
 
@@ -103,11 +103,11 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
       {mainStory ? (
       <section className="mx-auto max-w-[1600px] px-4 py-14 md:px-8 md:py-20">
         <article className="grid gap-10 border-b border-[#111111]/10 pb-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-          <div className="relative aspect-[16/10] overflow-hidden bg-white">
+          <div className="relative aspect-[3/4] overflow-hidden bg-white">
             <img
               src={mainStory.image}
               alt={mainStory.title}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover object-top"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -116,7 +116,7 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
               <span>{mainStory.category}</span>
               <span>{mainStory.year}</span>
             </div>
-            <h2 className="font-serif text-4xl font-light uppercase leading-tight md:text-6xl">
+            <h2 className="font-serif text-3xl font-light uppercase leading-tight md:text-4xl lg:text-5xl">
               {mainStory.title}
             </h2>
             <p className="mt-8 max-w-xl text-lg font-light leading-8 text-[#111111]/70">
@@ -161,7 +161,7 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
                   <img
                     src={story.image}
                     alt={story.title}
-                    className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.015]"
+                    className="h-full w-full object-cover object-top transition duration-700 group-hover:scale-[1.015]"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -169,7 +169,7 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
                   <span>{story.category}</span>
                   <span>{story.year}</span>
                 </div>
-                <h3 className="mt-4 font-serif text-3xl font-light uppercase leading-tight">
+                <h3 className="mt-4 font-serif text-xl font-light uppercase leading-tight md:text-2xl">
                   {story.title}
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#111111]/65">

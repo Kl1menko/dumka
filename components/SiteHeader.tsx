@@ -184,11 +184,11 @@ export function SiteHeader() {
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 h-dvh w-full max-w-md bg-white px-6 py-7 text-[#111111] shadow-2xl transition duration-700 md:px-10 ${
+        className={`fixed right-0 top-0 z-50 flex h-dvh w-full max-w-md flex-col bg-white px-6 py-7 text-[#111111] shadow-2xl transition duration-700 md:px-10 ${
           drawer ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="mb-14 flex items-center justify-between text-xs uppercase">
+        <div className="mb-6 shrink-0 flex items-center justify-between text-xs uppercase">
           <span>{drawer === "search" ? (isEnglish ? "Search" : "Пошук") : (isEnglish ? "Navigation" : "Навігація")}</span>
           <button className="luxury-link" onClick={() => setDrawer(null)}>
             {isEnglish ? "Close" : "Закрити"}
@@ -196,6 +196,7 @@ export function SiteHeader() {
         </div>
 
         {drawer === "menu" && (
+          <div className="min-h-0 flex-1 overflow-y-auto pb-8">
           <div className="grid gap-12">
             <nav className="flex flex-col gap-6 font-serif text-4xl uppercase">
               <Link href={homeHref} onClick={() => setDrawer(null)}>
@@ -228,10 +229,10 @@ export function SiteHeader() {
               </div>
               <div className="space-y-4">
                 <p className="text-[#111111]">{isEnglish ? "Collections" : "Колекції"}</p>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/#lookbook`} onClick={() => setDrawer(null)}>{isEnglish ? "Maky 2026" : "Маки 2026"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/#lookbook`} onClick={() => setDrawer(null)}>{isEnglish ? "Grono 2025/26" : "Гроно 2025/26"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/#lookbook`} onClick={() => setDrawer(null)}>{isEnglish ? "Kalyna 2023" : "Калина 2023"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/#lookbook`} onClick={() => setDrawer(null)}>{isEnglish ? "Inspired by Ukraine" : "Окрилена Україною"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/maky-spring-summer-2026`} onClick={() => setDrawer(null)}>{isEnglish ? "Maky 2026" : "Маки 2026"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/grono-fall-winter-2025`} onClick={() => setDrawer(null)}>{isEnglish ? "Grono 2025/26" : "Гроно 2025/26"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/kalyna-2023`} onClick={() => setDrawer(null)}>{isEnglish ? "Kalyna 2023" : "Калина 2023"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/inspired-by-ukraine-2022`} onClick={() => setDrawer(null)}>{isEnglish ? "Inspired by Ukraine" : "Окрилена Україною"}</Link>
               </div>
             </div>
             <div className="border-t border-[#111111]/10 pt-8">
@@ -244,11 +245,12 @@ export function SiteHeader() {
               </p>
             </div>
           </div>
+          </div>
         )}
 
         {drawer === "search" && (
           <form
-            className="space-y-10"
+            className="min-h-0 flex-1 overflow-y-auto pb-8 space-y-10"
             onSubmit={(event) => event.preventDefault()}
           >
             <label className="floating-field">

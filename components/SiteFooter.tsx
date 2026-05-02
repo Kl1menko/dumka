@@ -10,7 +10,11 @@ export function SiteFooter() {
   const content = getSiteContent(locale).footer;
   const prefix = locale === "en" ? "/en" : "";
   const linkHrefs = [`${prefix}/#collection`, `${prefix}/#showroom`, `${prefix}/#lookbook`, `${prefix}/stories`];
-  const serviceHrefs = ["#", "#", "https://www.instagram.com/nadiya_dumka/", "#"];
+  const serviceHrefs = [
+    `${prefix}/delivery`,
+    `${prefix}/returns`,
+    "https://www.instagram.com/nadiya_dumka/",
+  ];
 
   return (
     <footer className="mx-auto mt-24 grid max-w-7xl grid-cols-1 gap-12 border-t border-[#111111]/10 px-4 py-16 md:grid-cols-[1.2fr_1fr] md:px-8">
@@ -24,11 +28,20 @@ export function SiteFooter() {
             <p key={item}>{item}</p>
           ))}
         </div>
-        <form className="mt-10 max-w-sm">
-          <label className="floating-field">
-            <input placeholder=" " type="email" />
-            <span>{content.emailLabel}</span>
-          </label>
+        <form className="mt-10 max-w-sm" onSubmit={(e) => e.preventDefault()}>
+          <div className="flex gap-0">
+            <label className="floating-field flex-1">
+              <input placeholder=" " type="email" required />
+              <span>{content.emailLabel}</span>
+            </label>
+            <button
+              type="submit"
+              aria-label="Subscribe"
+              className="shrink-0 border border-l-0 border-[#111111]/12 px-4 text-[#111111]/50 transition hover:border-[#111111]/35 hover:text-[#111111]"
+            >
+              →
+            </button>
+          </div>
         </form>
       </div>
       <div className="grid grid-cols-2 gap-8 text-xs uppercase">

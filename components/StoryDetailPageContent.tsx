@@ -28,28 +28,29 @@ export function StoryDetailPageContent({
           {content.backLabel}
         </Link>
 
-        <div className="mt-10 grid gap-10 border-b border-[#111111]/10 pb-14 lg:grid-cols-[0.58fr_1.42fr] lg:items-end">
-          <div>
-            <div className="flex gap-4 text-xs uppercase text-[#111111]/55">
-              <span>{story.category}</span>
-              <span>{story.year}</span>
-            </div>
-            <h1 className="mt-8 font-serif text-5xl font-light uppercase leading-[0.94] md:text-7xl xl:text-8xl">
+        <div className="mt-8 border-b border-[#111111]/10 pb-12">
+          <div className="flex gap-4 text-[11px] uppercase tracking-widest text-[#111111]/45">
+            <span>{story.category}</span>
+            <span>{story.year}</span>
+          </div>
+
+          <div className="mt-6 grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-end lg:gap-16">
+            <h1 className="font-serif text-3xl font-light uppercase leading-tight md:text-5xl lg:text-6xl">
               {story.title}
             </h1>
+            <p className="text-base font-light leading-8 text-[#111111]/65 md:text-lg md:leading-9">
+              {story.excerpt}
+            </p>
           </div>
-          <p className="max-w-3xl text-xl font-light leading-9 text-[#111111]/70 md:text-2xl md:leading-10">
-            {story.excerpt}
-          </p>
         </div>
       </header>
 
       <section className="mx-auto max-w-[1700px] px-4 py-10 md:px-8 md:py-16">
-        <div className="relative flex min-h-[70svh] items-center justify-center overflow-hidden bg-white">
+        <div className="relative aspect-[4/5] overflow-hidden bg-white">
           <img
             src={story.image}
             alt={story.title}
-            className="max-h-[82svh] w-full object-contain"
+            className="h-full w-full object-cover object-top"
             referrerPolicy="no-referrer"
           />
         </div>
@@ -60,7 +61,7 @@ export function StoryDetailPageContent({
           <div className="text-xs uppercase text-[#111111]/55">
             {story.category} / {story.year}
           </div>
-          <div className="grid gap-7 text-2xl font-light leading-10 text-[#111111]/75">
+          <div className="grid gap-6 text-base font-light leading-8 text-[#111111]/75 md:text-lg md:leading-9">
             {story.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -93,7 +94,7 @@ export function StoryDetailPageContent({
               <img
                 src={image}
                 alt={`${story.title} ${index + 1}`}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover object-top"
                 referrerPolicy="no-referrer"
               />
             </div>
@@ -103,7 +104,7 @@ export function StoryDetailPageContent({
 
       <section className="mx-auto max-w-[1700px] px-4 py-20 md:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6 border-b border-[#111111]/10 pb-7">
-          <h2 className="font-serif text-4xl font-light lowercase md:text-6xl">
+          <h2 className="font-serif text-3xl font-light lowercase md:text-4xl">
             {content.moreLabel}
           </h2>
           {story.sourceUrl ? (
@@ -125,7 +126,7 @@ export function StoryDetailPageContent({
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.015]"
+                  className="h-full w-full object-cover object-top transition duration-700 group-hover:scale-[1.015]"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -133,7 +134,7 @@ export function StoryDetailPageContent({
                 <span>{item.category}</span>
                 <span>{item.year}</span>
               </div>
-              <h3 className="mt-4 font-serif text-3xl font-light uppercase leading-tight">
+              <h3 className="mt-4 font-serif text-xl font-light uppercase leading-tight md:text-2xl">
                 {item.title}
               </h3>
             </Link>

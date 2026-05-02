@@ -7,6 +7,11 @@ export const siteContent = {
       heroKicker: "Весна / Літо 2026",
       heroTitle: "Маки",
       heroCta: "Відкрити колекцію",
+      categoryImages: {
+        dresses: "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-132.jpg?v=1776528884",
+        suits: "https://www.nadiyadumka.com/cdn/shop/files/IMG_3283.jpg?v=1776515319",
+        evening: "https://www.nadiyadumka.com/cdn/shop/files/IMG_3246.jpg?v=1776677568",
+      },
       promoKicker: "Collection film",
       promoTitle: "МАКИ у русі",
       promoText:
@@ -114,7 +119,7 @@ export const siteContent = {
         "Речі для подій, що залишаються у пам'яті. Шоурум у ТЦ \"Магнус\", індивідуальна примірка та уважний сервіс.",
       emailLabel: "Email для листа з колекцією",
       links: ["Колекція", "Шоурум", "Lookbook", "Stories"],
-      serviceLinks: ["Доставка", "Повернення", "Instagram", "Партнерам"],
+      serviceLinks: ["Доставка", "Повернення", "Instagram"],
       address: ["вул. Шпитальна, 1, Львів", "“Магнус”, 3-й поверх", "dumkaprotebe@gmail.com", "+38 (067) 757-01-21"],
     },
   },
@@ -123,6 +128,11 @@ export const siteContent = {
       heroKicker: "Spring / Summer 2026",
       heroTitle: "Maky",
       heroCta: "Open collection",
+      categoryImages: {
+        dresses: "https://www.nadiyadumka.com/cdn/shop/files/d_lb_i-132.jpg?v=1776528884",
+        suits: "https://www.nadiyadumka.com/cdn/shop/files/IMG_3283.jpg?v=1776515319",
+        evening: "https://www.nadiyadumka.com/cdn/shop/files/IMG_3246.jpg?v=1776677568",
+      },
       promoKicker: "Collection film",
       promoTitle: "MAKY in motion",
       promoText:
@@ -230,7 +240,7 @@ export const siteContent = {
         "Pieces for events that stay in memory. A showroom at Magnus, individual fittings, and attentive service.",
       emailLabel: "Email for the collection letter",
       links: ["Collection", "Showroom", "Lookbook", "Stories"],
-      serviceLinks: ["Delivery", "Returns", "Instagram", "Partners"],
+      serviceLinks: ["Delivery", "Returns", "Instagram"],
       address: ["Shpytalna St, 1, Lviv", "Magnus, 3rd floor", "dumkaprotebe@gmail.com", "+38 (067) 757-01-21"],
     },
   },
