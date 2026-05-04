@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useWishlist } from "@/components/WishlistProvider";
 import { CurrencyCode } from "@/lib/currency";
 import { getLocaleFromPathname, localizePath } from "@/lib/i18n";
 
@@ -20,6 +21,7 @@ interface SearchResult {
 
 export function SiteHeader() {
   const [drawer, setDrawer] = useState<Drawer>(null);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -40,18 +42,20 @@ export function SiteHeader() {
     removeItem,
   } = useCart();
   const { currency, rateDate, setCurrency, formatPrice } = useCurrency();
+  const { items: wishlistItems, toggle: wishlistToggle, count: wishlistCount } = useWishlist();
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname);
   const isEnglish = locale === "en";
   const isHome = pathname === "/" || pathname === "/en";
   const homeHref = isEnglish ? "/en" : "/";
   const solidHeader = scrolled || !isHome;
-  const overlayOpen = Boolean(drawer) || isCartOpen;
+  const overlayOpen = Boolean(drawer) || isCartOpen || isWishlistOpen;
   const oppositeLocaleHref = localizePath(pathname, isEnglish ? "uk" : "en");
 
   function closeDrawers() {
     setDrawer(null);
     setCurrencyMenuOpen(false);
+    setIsWishlistOpen(false);
     closeCart();
   }
 
@@ -87,7 +91,7 @@ export function SiteHeader() {
         const payload = await response.json();
 
         if (!response.ok) {
-          throw new Error(payload.error || "Пошук тимчасово недоступний.");
+          throw new Error(payload.error || (isEnglish ? "Search temporarily unavailable." : "Пошук тимчасово недоступний."));
         }
 
         setSearchResults(Array.isArray(payload.products) ? payload.products : []);
@@ -97,7 +101,7 @@ export function SiteHeader() {
         }
 
         setSearchError(
-          error instanceof Error ? error.message : "Пошук тимчасово недоступний."
+          error instanceof Error ? error.message : (isEnglish ? "Search temporarily unavailable." : "Пошук тимчасово недоступний.")
         );
       } finally {
         setSearchLoading(false);
@@ -139,7 +143,7 @@ export function SiteHeader() {
           </Link>
           <div className="relative hidden sm:block">
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-current/35 text-[11px] uppercase transition hover:bg-current hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-current/35 text-[11px] uppercase transition hover:border-[#111111] hover:bg-[#111111] hover:text-white"
               aria-label={isEnglish ? "Select currency" : "Обрати валюту"}
               onClick={() => setCurrencyMenuOpen((open) => !open)}
             >
@@ -159,15 +163,79 @@ export function SiteHeader() {
                   setCurrencyMenuOpen(false);
                 }}
               />
-              <p className="mt-3 px-1 text-[10px] leading-4 text-[#111111]/45">
-                {isEnglish ? "NBU" : "НБУ"}: {rateDate}
-              </p>
             </div>
           </div>
           <button
-            className="luxury-link"
+            className="hidden luxury-link sm:block"
             onClick={() => {
               setDrawer(null);
+              closeCart();
+              setIsWishlistOpen(true);
+            }}
+          >
+            {isEnglish ? "Saved" : "Обране"}{wishlistCount > 0 ? ` (${wishlistCount})` : ""}
+          </button>
+          <button
+            className="relative inline-flex h-9 w-9 items-center justify-center sm:hidden"
+            aria-label={isEnglish ? "Open wishlist" : "Відкрити обране"}
+            onClick={() => {
+              setDrawer(null);
+              closeCart();
+              setIsWishlistOpen(true);
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 -translate-y-px"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            {wishlistCount > 0 && (
+              <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-[#111111] px-1 text-center text-[9px] leading-4 text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </button>
+          <button
+            className="relative inline-flex h-9 w-9 items-center justify-center sm:hidden"
+            aria-label={isEnglish ? "Open cart" : "Відкрити кошик"}
+            onClick={() => {
+              setDrawer(null);
+              setIsWishlistOpen(false);
+              openCart();
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 -translate-y-px"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="9" cy="20" r="1" />
+              <circle cx="18" cy="20" r="1" />
+              <path d="M2 3h3l3.2 12.5a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L21 7H6" />
+            </svg>
+            {itemCount > 0 && (
+              <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-[#111111] px-1 text-center text-[9px] leading-4 text-white">
+                {itemCount}
+              </span>
+            )}
+          </button>
+          <button
+            className="hidden luxury-link sm:block"
+            onClick={() => {
+              setDrawer(null);
+              setIsWishlistOpen(false);
               openCart();
             }}
           >
@@ -237,12 +305,19 @@ export function SiteHeader() {
             </div>
             <div className="border-t border-[#111111]/10 pt-8">
               <p className="mb-4 text-xs uppercase text-[#111111]/55">
+                {isEnglish ? "Language" : "Мова"}
+              </p>
+              <LanguageSwitcher
+                isEnglish={isEnglish}
+                oppositeLocaleHref={oppositeLocaleHref}
+                onSelect={() => setDrawer(null)}
+              />
+            </div>
+            <div className="border-t border-[#111111]/10 pt-8">
+              <p className="mb-4 text-xs uppercase text-[#111111]/55">
                 {isEnglish ? "Currency" : "Валюта"}
               </p>
               <CurrencySwitcher activeCurrency={currency} onSelect={setCurrency} />
-              <p className="mt-4 text-[11px] leading-5 text-[#111111]/45">
-                {isEnglish ? "NBU official rate" : "Офіційний курс НБУ"}: {rateDate}
-              </p>
             </div>
           </div>
           </div>
@@ -389,9 +464,9 @@ export function SiteHeader() {
                     </div>
 
                     <div className="mt-auto flex items-center justify-between pt-5">
-                      <div className="flex h-9 items-center border border-[#111111]/15">
+                      <div className="flex h-11 items-center border border-[#111111]/15">
                         <button
-                          className="h-full w-9 text-sm"
+                          className="h-full w-11 text-sm"
                           aria-label={isEnglish ? "Decrease quantity" : "Зменшити кількість"}
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         >
@@ -399,7 +474,7 @@ export function SiteHeader() {
                         </button>
                         <span className="w-8 text-center text-xs">{item.quantity}</span>
                         <button
-                          className="h-full w-9 text-sm"
+                          className="h-full w-11 text-sm"
                           aria-label={isEnglish ? "Increase quantity" : "Збільшити кількість"}
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
@@ -445,6 +520,83 @@ export function SiteHeader() {
           </div>
         )}
       </aside>
+
+      <aside
+        className={`fixed right-0 top-0 z-50 h-dvh w-full max-w-md bg-white px-6 py-7 text-[#111111] shadow-2xl transition duration-700 md:px-10 ${
+          isWishlistOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="mb-10 flex items-center justify-between text-xs uppercase">
+          <span>{isEnglish ? "Saved" : "Обране"}</span>
+          <button className="luxury-link" onClick={() => setIsWishlistOpen(false)}>
+            {isEnglish ? "Close" : "Закрити"}
+          </button>
+        </div>
+
+        {wishlistItems.length === 0 ? (
+          <div className="flex h-[calc(100%-80px)] flex-col justify-between">
+            <p className="max-w-sm text-sm leading-7 text-[#111111]/65">
+              {isEnglish
+                ? "No saved items yet. Tap the heart on any product to save it here."
+                : "Жодного збереженого виробу. Натисніть серце на будь-якому товарі, щоб зберегти його тут."}
+            </p>
+            <Link className="primary-button w-full" href={`${isEnglish ? "/en" : ""}/shop`} onClick={() => setIsWishlistOpen(false)}>
+              {isEnglish ? "Open catalog" : "До каталогу"}
+            </Link>
+          </div>
+        ) : (
+          <div className="flex h-[calc(100%-72px)] flex-col">
+            <div className="mobile-product-rail flex-1 overflow-y-auto border-y border-[#111111]/10">
+              {wishlistItems.map((item) => (
+                <div key={item.handle} className="flex gap-5 border-b border-[#111111]/10 py-6 last:border-b-0">
+                  <Link
+                    href={`${isEnglish ? "/en" : ""}/shop/${item.handle}`}
+                    className="h-32 w-24 shrink-0 bg-white"
+                    onClick={() => setIsWishlistOpen(false)}
+                  >
+                    {item.image ? (
+                      <img src={item.image} alt={item.title} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="h-full w-full border border-[#111111]/10" />
+                    )}
+                  </Link>
+
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <Link
+                      href={`${isEnglish ? "/en" : ""}/shop/${item.handle}`}
+                      className="font-serif text-2xl uppercase leading-tight"
+                      onClick={() => setIsWishlistOpen(false)}
+                    >
+                      {item.title}
+                    </Link>
+                    <p className="mt-3 text-xs uppercase text-[#111111]/50">
+                      {formatPrice(item.priceNumber)}
+                    </p>
+                    <div className="mt-auto pt-5">
+                      <button
+                        className="luxury-link text-[11px] uppercase text-[#111111]/55"
+                        onClick={() => wishlistToggle(item)}
+                      >
+                        {isEnglish ? "Remove" : "Прибрати"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-6">
+              <Link
+                className="primary-button w-full"
+                href={`${isEnglish ? "/en" : ""}/shop`}
+                onClick={() => setIsWishlistOpen(false)}
+              >
+                {isEnglish ? "Continue shopping" : "Продовжити покупки"}
+              </Link>
+            </div>
+          </div>
+        )}
+      </aside>
     </>
   );
 }
@@ -473,6 +625,33 @@ function CurrencySwitcher({
           {item}
         </button>
       ))}
+    </div>
+  );
+}
+
+function LanguageSwitcher({
+  isEnglish,
+  oppositeLocaleHref,
+  onSelect,
+}: {
+  isEnglish: boolean;
+  oppositeLocaleHref: string;
+  onSelect: () => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <span
+        className="flex min-h-10 items-center justify-center border border-[#111111] bg-[#111111] text-xs uppercase text-white"
+      >
+        {isEnglish ? "EN" : "UA"}
+      </span>
+      <Link
+        href={oppositeLocaleHref}
+        className="flex min-h-10 items-center justify-center border border-[#111111]/15 text-xs uppercase text-[#111111] transition hover:border-[#111111]/45"
+        onClick={onSelect}
+      >
+        {isEnglish ? "UA" : "EN"}
+      </Link>
     </div>
   );
 }

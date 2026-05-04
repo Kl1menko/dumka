@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
 
   if (!story) {
     return {
-      title: "Stories | DUMKA by Nadiya Dumka",
+      title: "Історії | DUMKA by Nadiya Dumka",
     };
   }
 

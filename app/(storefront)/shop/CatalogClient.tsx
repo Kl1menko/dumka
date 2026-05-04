@@ -81,31 +81,18 @@ export function CatalogClient({
 
   return (
     <>
-      <section className="border-b border-[#111111]/10 pt-32 md:pt-40">
-        <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-4 pb-16 md:grid-cols-[0.78fr_1.22fr] md:px-8 md:pb-24">
-          <div>
-            <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.eyebrow}</p>
-            <h1 className="font-serif text-5xl font-light uppercase leading-[0.92] md:text-7xl">
-              {content.title}
-            </h1>
-          </div>
-          <div className="max-w-3xl md:pt-8">
-            <p className="font-serif text-3xl font-light leading-tight md:text-5xl">
-              {content.intro}
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs uppercase text-[#111111]/55">
-              <span>{products.length} {content.itemWord}</span>
-              <span>{content.showroom}</span>
-              <span>{content.season}</span>
-            </div>
-          </div>
+      <section className="border-b border-[#111111]/10 pt-24 md:pt-30">
+        <div className="mx-auto max-w-[1600px] px-4 pb-6 md:px-8 md:pb-8">
+          <h1 className="font-serif text-5xl font-light uppercase leading-[0.92] md:text-7xl">
+            {content.title}
+          </h1>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1600px] px-4 py-8 md:px-8 md:py-12">
+      <section className="mx-auto max-w-[1600px] px-4 py-6 md:px-8 md:py-8">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[260px_1fr] lg:gap-16">
           <aside className="hidden lg:block">
-            <div className="sticky top-32">
+            <div className="sticky top-32 max-h-[calc(100dvh-8.5rem)] overflow-hidden">
               <div className="mb-10 flex items-center justify-between border-b border-[#111111]/10 pb-5">
                 <p className="text-xs uppercase text-[#111111]/55">{content.categories}</p>
                 {(category !== "all" || sort !== "featured") && (
@@ -115,12 +102,14 @@ export function CatalogClient({
                 )}
               </div>
 
-              <CategoryList
-                activeCategory={category}
-                categoryCounts={categoryCounts}
-                labels={content.categoryLabels}
-                onSelect={selectCategory}
-              />
+              <div className="max-h-[calc(100dvh-14rem)] overflow-y-auto pr-1">
+                <CategoryList
+                  activeCategory={category}
+                  categoryCounts={categoryCounts}
+                  labels={content.categoryLabels}
+                  onSelect={selectCategory}
+                />
+              </div>
             </div>
           </aside>
 
@@ -201,12 +190,14 @@ export function CatalogClient({
 
         <div className="border-y border-[#111111]/10 py-6">
           <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.categories}</p>
-          <CategoryList
-            activeCategory={category}
-            categoryCounts={categoryCounts}
-            labels={content.categoryLabels}
-            onSelect={selectCategory}
-          />
+          <div className="max-h-[42dvh] overflow-y-auto pr-1">
+            <CategoryList
+              activeCategory={category}
+              categoryCounts={categoryCounts}
+              labels={content.categoryLabels}
+              onSelect={selectCategory}
+            />
+          </div>
         </div>
 
         <div className="border-b border-[#111111]/10 py-6">

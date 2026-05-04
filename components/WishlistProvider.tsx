@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 const STORAGE_KEY = "dumka-wishlist-v1";
 
@@ -12,13 +12,21 @@ export interface WishlistItem {
   priceNumber: number;
 }
 
+interface WishlistContextValue {
+  items: WishlistItem[];
+  count: number;
+  toggle: (item: WishlistItem) => void;
+  isWishlisted: (handle: string) => boolean;
+}
+
+const WishlistContext = createContext<WishlistContextValue | undefined>(undefined);
+
 function readStorage(): WishlistItem[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    // support old format (array of strings)
     return parsed
       .map((entry) => (typeof entry === "string" ? null : entry))
       .filter((entry): entry is WishlistItem => Boolean(entry?.handle));
@@ -33,7 +41,7 @@ function writeStorage(items: WishlistItem[]) {
   } catch {}
 }
 
-export function useWishlist() {
+export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -56,5 +64,15 @@ export function useWishlist() {
     [items, hydrated]
   );
 
-  return { items, toggle, isWishlisted, count: items.length };
+  return (
+    <WishlistContext.Provider value={{ items, count: items.length, toggle, isWishlisted }}>
+      {children}
+    </WishlistContext.Provider>
+  );
+}
+
+export function useWishlist() {
+  const ctx = useContext(WishlistContext);
+  if (!ctx) throw new Error("useWishlist must be used inside WishlistProvider");
+  return ctx;
 }

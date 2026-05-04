@@ -31,13 +31,13 @@ type StoriesLocaleContent = {
 
 export const storiesContent = {
   uk: {
-    title: "stories",
-    signUp: "Sign-Up",
-    filters: ["All Stories", "Колекції", "Символ", "Craft"],
-    yearsLabel: "All Years",
+    title: "історії",
+    signUp: "Підписка",
+    filters: ["Усі історії", "Колекції", "Символ", "Майстерність"],
+    yearsLabel: "Усі роки",
     readLabel: "Читати історію",
     sourceLabel: "Відкрити колекцію",
-    backLabel: "Назад до stories",
+    backLabel: "Назад до історій",
     moreLabel: "Інші колекції",
     years: ["2026", "2025", "2023", "2022", "2021"],
     stories: [
@@ -112,7 +112,7 @@ export const storiesContent = {
         sourceUrl: "https://nadiyadumka.com/kolektsiia-osin-zyma-2025-26-grono/",
       },
       {
-        category: "Craft",
+        category: "Майстерність",
         year: "2026",
         title: "Пам'ять, що живе в кожній деталі",
         image: "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/d_lb_i-132.jpg?v=1776528884",
@@ -134,7 +134,7 @@ export const storiesContent = {
         ],
       },
       {
-        category: "Матеріали",
+        category: "Майстерність",
         year: "2026",
         title: "Тканини, що тримають емоцію",
         image: "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/C5DBD9FF-F84E-4B59-BC15-7E2187C9744D.jpg?v=1776463365",

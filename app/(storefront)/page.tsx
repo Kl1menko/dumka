@@ -53,7 +53,9 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
 
         <div className="absolute bottom-10 right-8 hidden flex-col items-center gap-3 text-white md:flex">
-          <span className="text-[10px] uppercase tracking-[0.2em] opacity-55" style={{ writingMode: "vertical-rl" }}>Scroll</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] opacity-55" style={{ writingMode: "vertical-rl" }}>
+            {locale === "en" ? "Scroll" : "Гортай"}
+          </span>
           <span className="h-12 w-px bg-white/30 relative overflow-hidden">
             <span className="absolute inset-x-0 top-0 h-full w-full animate-[scroll-line_1.8s_ease-in-out_infinite] bg-white" />
           </span>
@@ -81,7 +83,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         <div className="flex w-max animate-[marquee_22s_linear_infinite]">
           {Array.from({ length: 2 }).map((_, i) => (
             <span key={i} className="flex items-center gap-8 pr-8 text-[11px] uppercase tracking-[0.22em] text-[#111111]/40">
-              {["DUMKA by Nadiya Dumka", "·", locale === "en" ? "Spring — Summer 2026" : "Весна — Літо 2026", "·", locale === "en" ? "Maky Collection" : "Колекція Маки", "·", locale === "en" ? "Lviv, Ukraine" : "Львів, Україна", "·", "Made in Ukraine", "·"].map((word, j) => (
+              {["DUMKA by Nadiya Dumka", "·", locale === "en" ? "Spring — Summer 2026" : "Весна — Літо 2026", "·", locale === "en" ? "Maky Collection" : "Колекція Маки", "·", locale === "en" ? "Lviv, Ukraine" : "Львів, Україна", "·", locale === "en" ? "Made in Ukraine" : "Виготовлено в Україні", "·"].map((word, j) => (
                 <span key={j}>{word}</span>
               ))}
             </span>

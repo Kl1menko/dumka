@@ -223,14 +223,19 @@ button {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(17, 17, 17, 0.2);
-  border-radius: 10px;
+  background: rgba(17, 17, 17, 0.18);
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(17, 17, 17, 0.5);
+  background: rgba(17, 17, 17, 0.45);
+}
+
+::-webkit-scrollbar-corner {
+  background: #ffffff;
 }

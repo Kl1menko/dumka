@@ -1,13 +1,17 @@
 "use client";
 
-import { useWishlist } from "@/lib/wishlist";
+import { useWishlist } from "@/components/WishlistProvider";
 
 interface Props {
   handle: string;
+  title: string;
+  image: string;
+  price: string;
+  priceNumber: number;
   className?: string;
 }
 
-export function WishlistButton({ handle, className = "" }: Props) {
+export function WishlistButton({ handle, title, image, price, priceNumber, className = "" }: Props) {
   const { toggle, isWishlisted } = useWishlist();
   const active = isWishlisted(handle);
 
@@ -16,7 +20,7 @@ export function WishlistButton({ handle, className = "" }: Props) {
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        toggle(handle);
+        toggle({ handle, title, image, price, priceNumber });
       }}
       aria-label={active ? "Прибрати з вішліста" : "Додати до вішліста"}
       className={`flex h-8 w-8 items-center justify-center transition-opacity ${className}`}

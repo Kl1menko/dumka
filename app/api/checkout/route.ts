@@ -25,10 +25,11 @@ export async function POST(request: Request) {
   const storefrontToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION || "2026-04";
 
-  if (!shopDomain || !storefrontToken) {
+  const tokenMissing = storefrontToken === "MY_SHOPIFY_STOREFRONT_ACCESS_TOKEN" || !storefrontToken;
+  if (!shopDomain || tokenMissing) {
     return NextResponse.json(
-      { error: "Shopify checkout is not configured." },
-      { status: 500 }
+      { error: "Оформлення замовлення тимчасово недоступне. Зв'яжіться з нами через Instagram або телефон шоуруму." },
+      { status: 503 }
     );
   }
 

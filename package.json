@@ -11,7 +11,9 @@
     "build:clean": "rm -rf .next && next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint",
-    "migrate": "tsx --env-file=.env.local scripts/migrate.ts"
+    "migrate": "tsx --env-file=.env.local scripts/migrate.ts",
+    "sync:shopify-collections:dry": "tsx --env-file=.env.local scripts/sync-shopify-collections.ts",
+    "sync:shopify-collections": "tsx --env-file=.env.local scripts/sync-shopify-collections.ts --apply"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -2,15 +2,21 @@ import { Product } from "./types";
 
 export type CategorySlug =
   | "all"
-  | "dresses"
   | "suits"
-  | "blouses"
+  | "dresses"
   | "evening"
+  | "jackets"
   | "vests"
+  | "blouses"
+  | "skirts"
+  | "trousers"
   | "tops"
   | "shorts"
   | "jumpsuits"
+  | "leather"
+  | "corsets"
   | "accessories"
+  | "sets"
   | "gifts"
   | "other";
 
@@ -18,60 +24,177 @@ export type SortKey = "featured" | "price-asc" | "price-desc" | "name-asc";
 
 export interface CategoryOption {
   slug: CategorySlug;
-  label: string;
+  labelUk: string;
+  labelEn: string;
 }
 
 export const catalogCategories: CategoryOption[] = [
-  { slug: "all", label: "Усі" },
-  { slug: "dresses", label: "Сукні" },
-  { slug: "suits", label: "Костюми" },
-  { slug: "blouses", label: "Блузи" },
-  { slug: "evening", label: "Вечірній одяг" },
-  { slug: "vests", label: "Жилети" },
-  { slug: "tops", label: "Топи" },
-  { slug: "shorts", label: "Шорти" },
-  { slug: "jumpsuits", label: "Комбінезони" },
-  { slug: "accessories", label: "Аксесуари" },
-  { slug: "gifts", label: "Подарунки" },
-  { slug: "other", label: "Інше" },
+  { slug: "all",         labelUk: "Усі",              labelEn: "All" },
+  { slug: "suits",       labelUk: "Костюми",           labelEn: "Suits" },
+  { slug: "dresses",     labelUk: "Сукні",             labelEn: "Dresses" },
+  { slug: "evening",     labelUk: "Вечірній одяг",     labelEn: "Evening wear" },
+  { slug: "jackets",     labelUk: "Жакети",            labelEn: "Jackets" },
+  { slug: "vests",       labelUk: "Жилети",            labelEn: "Vests" },
+  { slug: "blouses",     labelUk: "Блузи",             labelEn: "Blouses" },
+  { slug: "skirts",      labelUk: "Спідниці",          labelEn: "Skirts" },
+  { slug: "trousers",    labelUk: "Штани",             labelEn: "Trousers" },
+  { slug: "tops",        labelUk: "Топи",              labelEn: "Tops" },
+  { slug: "shorts",      labelUk: "Шорти",             labelEn: "Shorts" },
+  { slug: "jumpsuits",   labelUk: "Комбінезони",       labelEn: "Jumpsuits" },
+  { slug: "leather",     labelUk: "Шкіряні вироби",   labelEn: "Leather outfits" },
+  { slug: "corsets",     labelUk: "Корсети",           labelEn: "Corsets" },
+  { slug: "accessories", labelUk: "Аксесуари",         labelEn: "Accessories" },
+  { slug: "sets",        labelUk: "Комплекти",         labelEn: "Sets" },
+  { slug: "gifts",       labelUk: "Подарунки",         labelEn: "Gifts" },
+  { slug: "other",       labelUk: "Інше",              labelEn: "Other" },
 ];
 
-export const catalogSorts: { key: SortKey; label: string }[] = [
-  { key: "featured", label: "Рекомендоване" },
-  { key: "price-asc", label: "Ціна: від нижчої" },
-  { key: "price-desc", label: "Ціна: від вищої" },
-  { key: "name-asc", label: "Назва: А-Я" },
+export const catalogSorts: { key: SortKey; labelUk: string; labelEn: string }[] = [
+  { key: "featured",   labelUk: "Рекомендоване",    labelEn: "Featured" },
+  { key: "price-asc",  labelUk: "Ціна: від нижчої", labelEn: "Price: low to high" },
+  { key: "price-desc", labelUk: "Ціна: від вищої",  labelEn: "Price: high to low" },
+  { key: "name-asc",   labelUk: "Назва: А-Я",       labelEn: "Name: A–Z" },
 ];
 
 const categoryMatchers: Record<Exclude<CategorySlug, "all" | "other">, string[]> = {
-  dresses: ["dress", "dresses", "сукня", "сукні"],
-  suits: ["suit", "suits", "костюм", "костюми"],
-  blouses: ["blouse", "blouses", "блуза", "блузи"],
-  evening: ["evening", "evening wear", "evening wears", "вечір"],
-  vests: ["vest", "vests", "жилет", "жилети"],
-  tops: ["top", "tops", "топ", "топи"],
-  shorts: ["short", "shorts", "шорти"],
-  jumpsuits: ["jumpsuit", "jumpsuits", "комбінезон", "комбінезони"],
+  suits:       ["suit", "suits", "костюм", "костюми"],
+  dresses:     ["dress", "dresses", "сукня", "сукні"],
+  evening:     ["evening", "evening wear", "evening wears", "вечір"],
+  jackets:     ["jacket", "jackets", "жакет", "жакети", "піджак", "піджаки"],
+  vests:       ["vest", "vests", "жилет", "жилети"],
+  blouses:     ["blouse", "blouses", "блуза", "блузи"],
+  skirts:      ["skirt", "skirts", "спідниця", "спідниці"],
+  trousers:    ["trouser", "trousers", "pant", "pants", "штани", "брюки"],
+  tops:        ["top", "tops", "топ", "топи"],
+  shorts:      ["short", "shorts", "шорти"],
+  jumpsuits:   ["jumpsuit", "jumpsuits", "комбінезон", "комбінезони"],
+  leather:     ["leather", "leather outfit", "leather outfits", "шкіря", "шкіряний", "шкіряні", "шкіра", "екошкір"],
+  corsets:     ["corset", "corsets", "корсет", "корсети"],
   accessories: ["accessory", "accessories", "аксесуар", "аксесуари"],
-  gifts: ["gift", "gifts", "подарунок", "подарунки"],
+  sets:        ["set", "sets", "комплект", "комплекти", "набір", "набори"],
+  gifts:       ["gift", "gifts", "подарунок", "подарунки"],
+};
+
+const categoryCollectionHandleMatchers: Record<
+  Exclude<CategorySlug, "all" | "other">,
+  string[]
+> = {
+  suits: ["suits"],
+  dresses: ["dresses"],
+  evening: ["evening-wears"],
+  jackets: ["піджаки"],
+  vests: ["жилеті", "жилети"],
+  blouses: ["blouses"],
+  skirts: ["спідниці"],
+  trousers: ["штани"],
+  tops: ["топи"],
+  shorts: ["шорти"],
+  jumpsuits: ["комбінезони"],
+  leather: ["шкіра"],
+  corsets: ["корсети"],
+  accessories: ["accessories"],
+  sets: ["sets", "комплекти"],
+  gifts: ["gifts"],
+};
+
+const exactTypeToCategory: Record<string, Exclude<CategorySlug, "all" | "other">> = {
+  suits: "suits",
+  suit: "suits",
+  dresses: "dresses",
+  dress: "dresses",
+  "evening wear": "evening",
+  "evening wears": "evening",
+  jackets: "jackets",
+  jacket: "jackets",
+  vests: "vests",
+  vest: "vests",
+  blouses: "blouses",
+  blouse: "blouses",
+  skirts: "skirts",
+  skirt: "skirts",
+  trousers: "trousers",
+  trouser: "trousers",
+  pants: "trousers",
+  tops: "tops",
+  top: "tops",
+  shorts: "shorts",
+  short: "shorts",
+  jumpsuits: "jumpsuits",
+  jumpsuit: "jumpsuits",
+  "leather outfits": "leather",
+  "leather outfit": "leather",
+  leather: "leather",
+  corsets: "corsets",
+  corset: "corsets",
+  accessories: "accessories",
+  accessory: "accessories",
+  sets: "sets",
+  set: "sets",
+  gifts: "gifts",
+  gift: "gifts",
 };
 
 export function getProductCategory(product: Product): CategorySlug {
-  const haystack = [
-    product.productType,
-    product.title,
-    ...product.tags,
-  ]
+  const categories = getProductCategories(product);
+  return categories[0] || "other";
+}
+
+function categoryMatchInHaystack(haystack: string, category: Exclude<CategorySlug, "all" | "other">) {
+  const terms = categoryMatchers[category] || [];
+  return terms.some((term) => haystack.includes(term));
+}
+
+function getCollectionHandlesFromTags(tags: string[]) {
+  const handles = new Set<string>();
+  for (const tag of tags) {
+    const normalized = (tag || "").trim().toLowerCase();
+    if (!normalized.startsWith("collection:")) continue;
+    const handle = normalized.slice("collection:".length).trim();
+    if (handle) handles.add(handle);
+  }
+  return handles;
+}
+
+export function getProductCategories(product: Product): CategorySlug[] {
+  const productType = product.productType?.trim().toLowerCase() || "";
+  const exactTypeCategory = exactTypeToCategory[productType];
+  const matches = new Set<CategorySlug>();
+
+  if (exactTypeCategory) {
+    matches.add(exactTypeCategory);
+  }
+
+  const haystack = [product.productType, product.title, ...product.tags]
     .join(" ")
     .toLowerCase();
+  const fullHaystack = [product.productType, product.title, ...product.tags, product.bodyHtml]
+    .join(" ")
+    .toLowerCase();
+  const collectionHandles = getCollectionHandlesFromTags(product.tags);
 
   for (const [slug, terms] of Object.entries(categoryMatchers)) {
+    const typedSlug = slug as Exclude<CategorySlug, "all" | "other">;
     if (terms.some((term) => haystack.includes(term))) {
-      return slug as CategorySlug;
+      matches.add(typedSlug);
     }
   }
 
-  return "other";
+  for (const [slug, handles] of Object.entries(categoryCollectionHandleMatchers)) {
+    const typedSlug = slug as Exclude<CategorySlug, "all" | "other">;
+    if (handles.some((handle) => collectionHandles.has(handle))) {
+      matches.add(typedSlug);
+    }
+  }
+
+  if (categoryMatchInHaystack(fullHaystack, "leather")) {
+    matches.add("leather");
+  }
+
+  if (matches.size === 0) {
+    return ["other"];
+  }
+
+  return Array.from(matches);
 }
 
 export function getCategoryCounts(products: Product[]) {
@@ -79,45 +202,33 @@ export function getCategoryCounts(products: Product[]) {
   counts.set("all", products.length);
 
   for (const product of products) {
-    const category = getProductCategory(product);
-    counts.set(category, (counts.get(category) || 0) + 1);
+    for (const category of getProductCategories(product)) {
+      counts.set(category, (counts.get(category) || 0) + 1);
+    }
   }
 
   return counts;
 }
 
 export function normalizeCategory(value?: string): CategorySlug {
-  const match = catalogCategories.find((category) => category.slug === value);
+  const match = catalogCategories.find((c) => c.slug === value);
   return match?.slug || "all";
 }
 
 export function normalizeSort(value?: string): SortKey {
-  const match = catalogSorts.find((sort) => sort.key === value);
+  const match = catalogSorts.find((s) => s.key === value);
   return match?.key || "featured";
 }
 
 export function filterProductsByCategory(products: Product[], category: CategorySlug) {
-  if (category === "all") {
-    return products;
-  }
-
-  return products.filter((product) => getProductCategory(product) === category);
+  if (category === "all") return products;
+  return products.filter((p) => getProductCategories(p).includes(category));
 }
 
 export function sortProducts(products: Product[], sort: SortKey) {
   const sorted = [...products];
-
-  if (sort === "price-asc") {
-    return sorted.sort((a, b) => a.priceNumber - b.priceNumber);
-  }
-
-  if (sort === "price-desc") {
-    return sorted.sort((a, b) => b.priceNumber - a.priceNumber);
-  }
-
-  if (sort === "name-asc") {
-    return sorted.sort((a, b) => a.title.localeCompare(b.title, "uk"));
-  }
-
+  if (sort === "price-asc") return sorted.sort((a, b) => a.priceNumber - b.priceNumber);
+  if (sort === "price-desc") return sorted.sort((a, b) => b.priceNumber - a.priceNumber);
+  if (sort === "name-asc") return sorted.sort((a, b) => a.title.localeCompare(b.title, "uk"));
   return sorted;
 }

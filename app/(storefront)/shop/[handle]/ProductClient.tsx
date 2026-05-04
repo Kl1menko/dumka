@@ -118,7 +118,13 @@ export function ProductClient({
             <div className="sticky top-32">
               <div className="mb-5 flex items-center justify-between">
                 <p className="text-xs uppercase text-[#111111]/55">{content.kicker}</p>
-                <WishlistButton handle={product.handle} />
+                <WishlistButton
+                  handle={product.handle}
+                  title={product.title}
+                  image={product.images[0] || ""}
+                  price={product.price}
+                  priceNumber={product.priceNumber}
+                />
               </div>
               <h1 className="mb-4 font-serif text-4xl font-light uppercase leading-tight md:text-5xl">
                 {product.title}
@@ -138,6 +144,7 @@ export function ProductClient({
                     {colorOptions.map((color) => (
                       <button
                         key={color}
+                        aria-pressed={selectedColor === color}
                         onClick={() => {
                           setSelectedColor(color);
                           const variantsInColor = product.variants.filter((v) => v.color === color);
@@ -160,7 +167,7 @@ export function ProductClient({
                             "";
                           setSelectedSize(nextSize);
                         }}
-                        className={`h-12 border px-4 text-xs uppercase tracking-wide transition-colors ${
+                        className={`h-12 border px-4 text-xs uppercase tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111] ${
                           selectedColor === color
                             ? "border-[#111111] bg-[#111111] text-white"
                             : "border-[#111111]/20 text-[#111111] hover:border-[#111111]"
@@ -191,8 +198,9 @@ export function ProductClient({
                       <button
                         key={size}
                         disabled={!available}
+                        aria-pressed={selectedSize === size}
                         onClick={() => setSelectedSize(size)}
-                        className={`flex h-12 w-12 items-center justify-center border text-sm transition-colors ${
+                        className={`flex h-12 w-12 items-center justify-center border text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111] ${
                           selectedSize === size
                             ? "border-[#111111] bg-[#111111] text-white"
                             : "border-[#111111]/20 text-[#111111] hover:border-[#111111]"

@@ -8,6 +8,7 @@ import {
   type ProductInput,
   type VariantInput,
 } from "@/lib/actions/products";
+import { catalogCategories } from "@/lib/catalog";
 
 interface Props {
   initialData?: ProductInput & { originalHandle: string };
@@ -260,14 +261,22 @@ export function ProductForm({ initialData }: Props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelCls}>Тип товару</label>
-              <input
-                type="text"
+              <label className={labelCls}>Категорія</label>
+              <select
                 value={productType}
                 onChange={(e) => setProductType(e.target.value)}
-                placeholder="напр. Сукня, Костюм"
                 className={fieldCls}
-              />
+              >
+                <option value="">— оберіть категорію —</option>
+                {catalogCategories
+                  .filter((c) => c.slug !== "all" && c.slug !== "other")
+                  .map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.labelUk} / {c.labelEn}
+                    </option>
+                  ))}
+                <option value="other">Інше / Other</option>
+              </select>
             </div>
             <div>
               <label className={labelCls}>Порядок сортування</label>

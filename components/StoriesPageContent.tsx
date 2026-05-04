@@ -45,7 +45,7 @@ export function StoriesPageContent({ locale }: { locale: Locale }) {
     return content.stories.filter((story) => {
       const matchFilter =
         !activeFilter ||
-        activeFilter.toLowerCase().includes("all") ||
+        activeFilter === content.filters[0] ||
         story.category.toLowerCase() === activeFilter.toLowerCase();
       const matchYear = !activeYear || story.year === activeYear;
       return matchFilter && matchYear;

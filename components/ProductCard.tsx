@@ -33,6 +33,10 @@ export function ProductCard({ product }: { product: Product }) {
         <span className="product-tile-action" aria-hidden="true">+</span>
         <WishlistButton
           handle={product.handle}
+          title={product.title}
+          image={product.images[0] || ""}
+          price={product.price}
+          priceNumber={product.priceNumber}
           className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
         />
       </div>

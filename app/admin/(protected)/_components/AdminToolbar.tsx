@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { catalogCategories } from "@/lib/catalog";
 
 interface Props {
   allTypes: string[];
@@ -70,10 +71,14 @@ export function AdminToolbar({ allTypes, currentSearch, currentType, currentStat
         onChange={(e) => push({ type: e.target.value })}
         className="h-9 border border-[#111]/12 bg-white px-3 text-sm outline-none focus:border-[#111]/35 text-[#111]/70"
       >
-        <option value="">Усі типи</option>
-        {allTypes.map((t) => (
-          <option key={t} value={t}>{t}</option>
-        ))}
+        <option value="">Усі категорії</option>
+        {catalogCategories
+          .filter((c) => c.slug !== "all")
+          .map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.labelUk}
+            </option>
+          ))}
       </select>
 
       <select
