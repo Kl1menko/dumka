@@ -11,6 +11,10 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nadiyadumka.com'),
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
   title: 'DUMKA by Nadiya Dumka | Маки 2026',
   description: 'Premium womenswear, showroom in Lviv, and the Maky Spring-Summer 2026 collection.',
   openGraph: {
