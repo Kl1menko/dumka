@@ -218,17 +218,22 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
             <h2 className="font-serif text-3xl font-light uppercase md:text-4xl">{content.mediaTitle}</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-px border border-[#111111]/8 bg-[#111111]/8 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-px border border-[#111111]/8 bg-[#111111]/8 sm:grid-cols-3">
             {[
-              { name: "Vogue Ukraine", issue: "SS 2026" },
-              { name: "L'Officiel Ukraine", issue: "FW 2025" },
-              { name: "Harper's Bazaar UA", issue: "SS 2025" },
-              { name: "Elle Ukraine", issue: "FW 2025" },
-            ].map(({ name, issue }) => (
-              <div key={name} className="flex flex-col items-center justify-center gap-2 bg-white px-6 py-10 text-center">
-                <span className="text-sm font-light uppercase tracking-wider text-[#111111]/80">{name}</span>
+              { name: "Ukrainian Fashion Week", issue: "FW 2025/26", href: "http://fashionweek.ua/uk/news/fw25-26-dumka-pokaz/" },
+              { name: "Harper's Bazaar UA", issue: "FW 2025/26", href: "https://harpersbazaar.com.ua/fashion/trends/holovni-trendy-sezonu-osin-zyma-202526-z-podiumiv-ukrainian-fashion-week/" },
+              { name: "CoolBaba", issue: "FW 2025/26", href: "https://coolbaba.in.ua/kolekcziya-grono-vid-dumka-by-nadiya-dumka-vytonchena-elegantnist-na-ukrainian-fashion-week/" },
+            ].map(({ name, issue, href }) => (
+              <a
+                key={name}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center justify-center gap-2 bg-white px-6 py-10 text-center transition hover:bg-[#fafaf9]"
+              >
+                <span className="text-sm font-light uppercase tracking-wider text-[#111111]/80 transition group-hover:text-[#111111]">{name}</span>
                 <span className="text-[10px] uppercase tracking-widest text-[#111111]/30">{issue}</span>
-              </div>
+              </a>
             ))}
           </div>
 
@@ -238,7 +243,14 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
             </p>
             <div className="mt-6 flex items-center gap-4">
               <span className="h-px w-8 bg-[#111111]/25" />
-              <span className="text-xs uppercase tracking-widest text-[#111111]/40">Vogue Ukraine, 2025</span>
+              <a
+                href="https://harpersbazaar.com.ua/fashion/trends/holovni-trendy-sezonu-osin-zyma-202526-z-podiumiv-ukrainian-fashion-week/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs uppercase tracking-widest text-[#111111]/40 transition hover:text-[#111111]/70"
+              >
+                Harper's Bazaar UA, 2025/26
+              </a>
             </div>
           </div>
         </div>
