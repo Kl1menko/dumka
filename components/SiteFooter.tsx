@@ -61,43 +61,45 @@ export function SiteFooter() {
             </form>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-8 text-xs uppercase">
-          <ul className="space-y-5">
-            {content.links.map((item, index) => (
-              <li key={item}>
-                <a href={linkHrefs[index]} className="luxury-link">
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <ul className="space-y-5">
-            {content.serviceLinks.map((item, index) => (
-              <li key={item}>
-                <a href={serviceHrefs[index]} className="luxury-link">
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col justify-between gap-10">
+          <div className="grid grid-cols-2 gap-8 text-xs uppercase">
+            <ul className="space-y-5">
+              {content.links.map((item, index) => (
+                <li key={item}>
+                  <a href={linkHrefs[index]} className="luxury-link">
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-5">
+              {content.serviceLinks.map((item, index) => (
+                <li key={item}>
+                  <a href={serviceHrefs[index]} className="luxury-link">
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex justify-start md:justify-end">
+            <a
+              href="https://www.kllo.com.ua/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="KLLO Studio"
+              className="opacity-100 transition hover:opacity-70"
+            >
+              <img
+                src="/images/developer.svg"
+                alt="KLLO"
+                className="h-5 w-auto md:h-6"
+              />
+            </a>
+          </div>
         </div>
       </footer>
-
-      <div className="mx-auto mb-8 mt-2 flex max-w-7xl items-center justify-center border-t border-[#111111]/10 px-4 pt-5 md:px-8">
-        <a
-          href="https://www.kllo.com.ua/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="KLLO Studio"
-          className="opacity-100 transition hover:opacity-70"
-        >
-          <img
-            src="/images/developer.svg"
-            alt="KLLO"
-            className="h-5 w-auto md:h-7"
-          />
-        </a>
-      </div>
     </>
   );
 }

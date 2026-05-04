@@ -21,6 +21,7 @@ export function ProductClient({
   product: Product;
   relatedProducts: Product[];
 }) {
+  const localePrefix = locale === "en" ? "/en" : "";
   const isRealSize = (value: string | undefined) => {
     const normalized = (value || "").trim().toLowerCase();
     return normalized.length > 0 && normalized !== "default title";
@@ -314,7 +315,7 @@ export function ProductClient({
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-8 lg:grid-cols-4">
               {recentItems.slice(0, 4).map((item) => (
-                <a key={item.handle} href={`/shop/${item.handle}`} className="group block">
+                <a key={item.handle} href={`${localePrefix}/shop/${item.handle}`} className="group block">
                   <div className="product-tile-media">
                     {item.image && (
                       <Image

@@ -18,12 +18,13 @@ export function ProductCard({
   locale?: Locale;
 }) {
   const { formatPrice } = useCurrency();
+  const localePrefix = locale === "en" ? "/en" : "";
   const mainImage = product.images[0] || FALLBACK;
   const hoverImage = product.images[1] || mainImage;
   const displayTitle = localizeProductTitle(product.title, locale);
 
   return (
-    <Link href={`/shop/${product.handle}`} className="group block">
+    <Link href={`${localePrefix}/shop/${product.handle}`} className="group block">
       <div className="product-tile-media">
         <img
           src={mainImage}
