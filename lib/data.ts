@@ -1,10 +1,14 @@
 import { Product, ProductVariant } from "./types";
-import { createClient } from "./supabase/server";
+import { createPublicServerClient } from "./supabase/public-server";
 
 export interface ProductsResult {
   products: Product[];
   error: string;
 }
+
+const CACHE_TTL_MS = 60_000;
+let productsCache: { expiresAt: number; value: ProductsResult } | null = null;
+let catalogCache: { expiresAt: number; value: ProductsResult } | null = null;
 
 type VariantRow = {
   id: string;
@@ -27,6 +31,19 @@ type ProductRow = {
   sort_order: number;
   published: boolean;
   product_variants: VariantRow[];
+};
+
+type CatalogProductRow = {
+  handle: string;
+  title: string;
+  images: string[];
+  product_type: string;
+  tags: string[];
+  sort_order: number;
+  published: boolean;
+  product_variants: Array<{
+    price_uah: number;
+  }>;
 };
 
 function formatUah(value: number): string {
@@ -75,8 +92,12 @@ function mapRow(row: ProductRow): Product {
 }
 
 export async function getProductsResult(): Promise<ProductsResult> {
+  if (productsCache && productsCache.expiresAt > Date.now()) {
+    return productsCache.value;
+  }
+
   try {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data, error } = await supabase
       .from("products")
@@ -86,9 +107,60 @@ export async function getProductsResult(): Promise<ProductsResult> {
 
     if (error) throw error;
 
-    return { products: (data as ProductRow[]).map(mapRow), error: "" };
+    const result = { products: (data as ProductRow[]).map(mapRow), error: "" };
+    productsCache = { value: result, expiresAt: Date.now() + CACHE_TTL_MS };
+    return result;
   } catch (err) {
     console.error("Error reading products:", err);
+    return {
+      products: [],
+      error:
+        "Каталог тимчасово недоступний. Спробуйте оновити сторінку або зв'яжіться з шоурумом.",
+    };
+  }
+}
+
+function mapCatalogRow(row: CatalogProductRow): Product {
+  const prices = (row.product_variants ?? [])
+    .map((variant) => Number(variant.price_uah) || 0)
+    .filter((price) => price > 0);
+  const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+
+  return {
+    handle: row.handle,
+    title: row.title,
+    bodyHtml: "",
+    images: row.images ?? [],
+    variants: [],
+    price: formatUah(minPrice),
+    priceNumber: minPrice,
+    productType: row.product_type,
+    tags: row.tags ?? [],
+    sortOrder: row.sort_order,
+    published: row.published,
+  };
+}
+
+export async function getCatalogProductsResult(): Promise<ProductsResult> {
+  if (catalogCache && catalogCache.expiresAt > Date.now()) {
+    return catalogCache.value;
+  }
+
+  try {
+    const supabase = createPublicServerClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("handle,title,images,product_type,tags,sort_order,published,product_variants(price_uah)")
+      .eq("published", true)
+      .order("sort_order", { ascending: true });
+
+    if (error) throw error;
+
+    const result = { products: (data as CatalogProductRow[]).map(mapCatalogRow), error: "" };
+    catalogCache = { value: result, expiresAt: Date.now() + CACHE_TTL_MS };
+    return result;
+  } catch (err) {
+    console.error("Error reading catalog products:", err);
     return {
       products: [],
       error:
@@ -106,7 +178,7 @@ export async function getProductByHandle(
   handle: string
 ): Promise<Product | undefined> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicServerClient();
 
     const { data, error } = await supabase
       .from("products")

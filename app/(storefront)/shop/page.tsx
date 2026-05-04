@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
 import { CatalogClient } from "./CatalogClient";
-import { getProductsResult } from "@/lib/data";
+import { getCatalogProductsResult } from "@/lib/data";
 import {
   catalogCategories,
   getCategoryCounts,
@@ -33,7 +33,7 @@ export async function ShopPageContent({
 }: ShopPageProps & { locale?: Locale }) {
   const [{ category, sort }, products] = await Promise.all([
     searchParams,
-    getProductsResult(),
+    getCatalogProductsResult(),
   ]);
   const initialCategory = normalizeCategory(category);
   const initialSort = normalizeSort(sort);
