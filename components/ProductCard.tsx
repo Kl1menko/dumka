@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Product } from "@/lib/types";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { WishlistButton } from "@/components/WishlistButton";
@@ -17,23 +16,19 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/${product.handle}`} className="group block">
       <div className="product-tile-media">
-        <Image
+        <img
           src={mainImage}
           alt={product.title}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="product-tile-image opacity-100 group-hover:opacity-0"
           referrerPolicy="no-referrer"
-          unoptimized
         />
-        <Image
+        <img
           src={hoverImage}
-          alt={`${product.title} alternative`}
-          fill
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
           className="product-tile-image opacity-0 group-hover:opacity-100"
           referrerPolicy="no-referrer"
-          unoptimized
         />
         <span className="product-tile-action" aria-hidden="true">+</span>
         <WishlistButton

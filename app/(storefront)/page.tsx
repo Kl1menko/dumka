@@ -118,7 +118,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </section>
 
-      <section id="collection" data-reveal className="mx-auto max-w-[1600px] px-4 py-24 md:px-8">
+      <section id="collection" className="mx-auto max-w-[1600px] px-4 py-24 md:px-8">
         <div className="mb-20 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div>
             <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.collectionKicker}</p>
@@ -256,7 +256,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </section>
 
-      <section id="showroom" data-reveal className="border-t border-[#111111]/10 py-24 md:py-32">
+      <section id="showroom" className="border-t border-[#111111]/10 py-24 md:py-32">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 md:grid-cols-2 md:px-8">
           <div className="relative aspect-[4/5] overflow-hidden bg-white">
             <img
