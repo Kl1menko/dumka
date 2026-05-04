@@ -1,5 +1,6 @@
 export interface ProductVariant {
   id: string;
+  shopifyId?: string;
   title: string;
   price: string;        // formatted UAH string for display
   priceNumber: number;  // raw UAH value

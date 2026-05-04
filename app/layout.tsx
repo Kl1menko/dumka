@@ -13,6 +13,19 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://nadiyadumka.com'),
   title: 'DUMKA by Nadiya Dumka | Маки 2026',
   description: 'Premium womenswear, showroom in Lviv, and the Maky Spring-Summer 2026 collection.',
+  openGraph: {
+    type: 'website',
+    siteName: 'DUMKA by Nadiya Dumka',
+    title: 'DUMKA by Nadiya Dumka | Маки 2026',
+    description: 'Premium womenswear, showroom in Lviv, and the Maky Spring-Summer 2026 collection.',
+    images: [{ url: '/images/hero-maky.jpg', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DUMKA by Nadiya Dumka | Маки 2026',
+    description: 'Premium womenswear, showroom in Lviv, and the Maky Spring-Summer 2026 collection.',
+    images: ['/images/hero-maky.jpg'],
+  },
 }
 
 export default function RootLayout({

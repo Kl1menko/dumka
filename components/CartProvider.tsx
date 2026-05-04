@@ -94,8 +94,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         product.variants[0];
       const normalizedSize = size || selectedVariant?.size || "";
       const normalizedColor = color || selectedVariant?.color || "";
-      const variantId = selectedVariant?.id || "";
-      const id = `${product.handle}:${variantId || `${normalizedSize}:${normalizedColor}` || "default"}`;
+      const supabaseId = selectedVariant?.id || "";
+      const variantId = selectedVariant?.shopifyId || supabaseId;
+      const id = `${product.handle}:${supabaseId || `${normalizedSize}:${normalizedColor}` || "default"}`;
 
       setItems((currentItems) => {
         const existingItem = currentItems.find((item) => item.id === id);

@@ -8,6 +8,7 @@ export interface ProductsResult {
 
 type VariantRow = {
   id: string;
+  shopify_id: string | null;
   title: string;
   price_uah: number;
   size: string;
@@ -42,6 +43,7 @@ function mapRow(row: ProductRow): Product {
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((v) => ({
       id: v.id,
+      shopifyId: v.shopify_id ?? undefined,
       title: v.title,
       price: formatUah(v.price_uah),
       priceNumber: v.price_uah,
