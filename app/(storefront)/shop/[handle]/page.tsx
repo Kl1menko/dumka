@@ -17,17 +17,31 @@ export async function generateMetadata({
 }: {
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
+  return generateMetadataForLocale(params, "uk");
+}
+
+export async function generateMetadataForLocale(
+  params: Promise<{ handle: string }>,
+  locale: Locale
+): Promise<Metadata> {
   const { handle } = await params;
   const products = await getProducts();
   const product = findProductByHandle(products, handle);
 
   if (!product) {
     return {
-      title: "Виріб не знайдено | DUMKA by Nadiya Dumka",
+      title:
+        locale === "en"
+          ? "Product not found | DUMKA by Nadiya Dumka"
+          : "Виріб не знайдено | DUMKA by Nadiya Dumka",
     };
   }
 
-  const description = getProductDescription(product.bodyHtml);
+  const sourceDescription =
+    locale === "en" && product.bodyHtmlEn?.trim().length
+      ? product.bodyHtmlEn
+      : product.bodyHtml;
+  const description = getProductDescription(sourceDescription, locale);
   const image = product.images[0];
 
   return {
@@ -84,9 +98,11 @@ export async function ProductPageContent({
   return <ProductClient locale={locale} product={product} relatedProducts={relatedProducts} />;
 }
 
-function getProductDescription(bodyHtml: string) {
+function getProductDescription(bodyHtml: string, locale: Locale) {
   const fallback =
-    "DUMKA by Nadiya Dumka: преміальний жіночий одяг, шоурум у Львові та індивідуальна примірка.";
+    locale === "en"
+      ? "DUMKA by Nadiya Dumka: premium womenswear, Lviv showroom, and personalized fittings."
+      : "DUMKA by Nadiya Dumka: преміальний жіночий одяг, шоурум у Львові та індивідуальна примірка.";
   const plainText = bodyHtml
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ")

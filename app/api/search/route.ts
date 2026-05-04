@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getProductsResult } from "@/lib/data";
+import { localizeProductTitle } from "@/lib/product-title";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,6 +21,7 @@ export async function GET(request: Request) {
       const haystack = normalize(
         [
           product.title,
+          localizeProductTitle(product.title, "en"),
           product.productType,
           product.tags.join(" "),
           stripHtml(product.bodyHtml),

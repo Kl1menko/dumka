@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#f5f5f3]">
       <div className="w-full max-w-sm">
         <p className="mb-2 font-serif text-2xl tracking-widest uppercase text-[#111]">Dumka</p>
-        <p className="mb-10 text-xs uppercase tracking-widest text-[#111]/40">Вхід в адмінку</p>
+        <p className="mb-10 text-xs uppercase tracking-widest text-[#111]/40">Вхід в адмін панель</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>

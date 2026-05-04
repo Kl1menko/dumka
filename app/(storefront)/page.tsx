@@ -133,7 +133,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
 
         <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-x-8 md:gap-y-16 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard key={product.handle} product={product} />
+            <ProductCard key={product.handle} product={product} locale={locale} />
           ))}
         </div>
 

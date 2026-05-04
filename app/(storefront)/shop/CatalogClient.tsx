@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import {
@@ -14,6 +14,7 @@ import {
 import { Product } from "@/lib/types";
 import { getSiteContent } from "@/content/site";
 import { Locale } from "@/lib/i18n";
+import { useRecentlyViewed } from "@/lib/recently-viewed";
 
 interface CatalogClientProps {
   locale: Locale;
@@ -32,12 +33,15 @@ export function CatalogClient({
   initialSort,
   categoryCounts,
 }: CatalogClientProps) {
+  const PRODUCTS_PER_PAGE = 24;
   const content = getSiteContent(locale).catalog;
   const localePrefix = locale === "en" ? "/en" : "";
   const router = useRouter();
   const [category, setCategory] = useState<CategorySlug>(initialCategory);
   const [sort, setSort] = useState<SortKey>(initialSort);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
+  const { items: recentItems } = useRecentlyViewed();
 
   const visibleProducts = useMemo(() => {
     return sortProducts(filterProductsByCategory(products, category), sort);
@@ -47,6 +51,22 @@ export function CatalogClient({
     content.categoryLabels[category] || content.categoryLabels.all;
   const currentSortLabel =
     content.sortLabels[sort] || content.sortLabels.featured;
+  const displayedProducts = visibleProducts.slice(0, visibleCount);
+  const canLoadMore = visibleCount < visibleProducts.length;
+  const recentProducts = useMemo(() => {
+    const byHandle = new Map(
+      products.map((item) => [normalizeHandle(item.handle), item])
+    );
+
+    return recentItems
+      .map((item) => byHandle.get(normalizeHandle(item.handle)))
+      .filter((item): item is Product => Boolean(item))
+      .slice(0, 4);
+  }, [products, recentItems]);
+
+  useEffect(() => {
+    setVisibleCount(PRODUCTS_PER_PAGE);
+  }, [category, sort]);
 
   function syncUrl(nextCategory: CategorySlug, nextSort: SortKey) {
     const params = new URLSearchParams();
@@ -150,11 +170,35 @@ export function CatalogClient({
             {productsError ? (
               <CatalogError message={productsError} title={content.errorTitle} cta={content.contactShowroom} />
             ) : visibleProducts.length > 0 ? (
+              <>
               <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-x-8 md:gap-y-16 xl:grid-cols-3">
-                {visibleProducts.map((product) => (
-                  <ProductCard key={product.handle} product={product} />
+                {displayedProducts.map((product) => (
+                  <ProductCard key={product.handle} product={product} locale={locale} />
                 ))}
               </div>
+              {canLoadMore && (
+                <div className="mt-12 flex justify-center">
+                  <button
+                    className="ghost-button min-w-44"
+                    onClick={() => setVisibleCount((count) => count + PRODUCTS_PER_PAGE)}
+                  >
+                    {locale === "en" ? "Show more" : "Показати ще"}
+                  </button>
+                </div>
+              )}
+              {recentProducts.length > 0 && (
+                <section className="mt-16 border-t border-[#111111]/10 pt-10 md:mt-20">
+                  <p className="mb-3 text-xs uppercase text-[#111111]/45">
+                    {locale === "en" ? "Recently viewed" : "Нещодавно переглянуті"}
+                  </p>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-x-8 md:gap-y-16 xl:grid-cols-4">
+                    {recentProducts.map((product) => (
+                      <ProductCard key={product.handle} product={product} locale={locale} />
+                    ))}
+                  </div>
+                </section>
+              )}
+              </>
             ) : (
               <div className="flex min-h-[420px] flex-col items-center justify-center border-y border-[#111111]/10 text-center">
                 <p className="mb-4 font-serif text-3xl font-light uppercase">{content.emptyTitle}</p>
@@ -230,6 +274,10 @@ export function CatalogClient({
       </aside>
     </>
   );
+}
+
+function normalizeHandle(value: string): string {
+  return value.trim().normalize("NFC").toLowerCase();
 }
 
 function CatalogError({

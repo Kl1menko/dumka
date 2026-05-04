@@ -43,6 +43,7 @@ export function ProductForm({ initialData }: Props) {
   const [handle, setHandle] = useState(initialData?.handle ?? "");
   const [handleManual, setHandleManual] = useState(isEdit);
   const [bodyHtml, setBodyHtml] = useState(initialData?.body_html ?? "");
+  const [bodyHtmlEn, setBodyHtmlEn] = useState(initialData?.body_html_en ?? "");
   const [productType, setProductType] = useState(initialData?.product_type ?? "");
   const [tagsRaw, setTagsRaw] = useState((initialData?.tags ?? []).join(", "));
   const [imagesRaw, setImagesRaw] = useState((initialData?.images ?? []).join("\n"));
@@ -134,6 +135,7 @@ export function ProductForm({ initialData }: Props) {
       handle: normalizedHandle,
       title: title.trim(),
       body_html: bodyHtml,
+      body_html_en: bodyHtmlEn,
       product_type: productType,
       tags,
       images,
@@ -309,6 +311,19 @@ export function ProductForm({ initialData }: Props) {
               rows={5}
               className={fieldCls + " resize-y font-mono text-xs"}
             />
+          </div>
+
+          <div>
+            <label className={labelCls}>Опис EN (HTML або звичайний текст)</label>
+            <textarea
+              value={bodyHtmlEn}
+              onChange={(e) => setBodyHtmlEn(e.target.value)}
+              rows={5}
+              className={fieldCls + " resize-y font-mono text-xs"}
+            />
+            <p className="mt-1 text-[10px] text-[#111]/30">
+              Для англомовної версії. Якщо порожньо, використовується основний опис.
+            </p>
           </div>
 
           <div className="flex items-center gap-3">

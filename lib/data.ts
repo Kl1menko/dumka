@@ -25,6 +25,7 @@ type ProductRow = {
   handle: string;
   title: string;
   body_html: string;
+  body_html_en: string;
   images: string[];
   product_type: string;
   tags: string[];
@@ -80,6 +81,7 @@ function mapRow(row: ProductRow): Product {
     handle: row.handle,
     title: row.title,
     bodyHtml: row.body_html,
+    bodyHtmlEn: row.body_html_en ?? "",
     images: row.images ?? [],
     variants,
     price: minVariant?.price ?? "0 ₴",

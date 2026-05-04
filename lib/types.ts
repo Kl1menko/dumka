@@ -13,6 +13,7 @@ export interface Product {
   handle: string;
   title: string;
   bodyHtml: string;
+  bodyHtmlEn?: string;
   images: string[];
   variants: ProductVariant[];
   price: string;        // lowest variant price, formatted

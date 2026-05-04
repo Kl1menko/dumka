@@ -8,6 +8,7 @@ import { useCurrency } from "@/components/CurrencyProvider";
 import { useWishlist } from "@/components/WishlistProvider";
 import { CurrencyCode } from "@/lib/currency";
 import { getLocaleFromPathname, localizePath } from "@/lib/i18n";
+import { localizeProductTitle } from "@/lib/product-title";
 
 type Drawer = "menu" | "search" | null;
 
@@ -303,7 +304,7 @@ export function SiteHeader() {
                 <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/inspired-by-ukraine-2022`} onClick={() => setDrawer(null)}>{isEnglish ? "Inspired by Ukraine" : "Окрилена Україною"}</Link>
               </div>
             </div>
-            <div className="border-t border-[#111111]/10 pt-8">
+            <div className="border-t border-[#111111]/10 pt-8 md:hidden">
               <p className="mb-4 text-xs uppercase text-[#111111]/55">
                 {isEnglish ? "Language" : "Мова"}
               </p>
@@ -379,7 +380,7 @@ export function SiteHeader() {
                       {product.image ? (
                         <img
                           src={product.image}
-                          alt={product.title}
+                          alt={localizeProductTitle(product.title, isEnglish ? "en" : "uk")}
                           className="h-full w-full object-contain"
                           referrerPolicy="no-referrer"
                         />
@@ -389,7 +390,7 @@ export function SiteHeader() {
                     </div>
                     <div className="min-w-0 pt-1">
                       <p className="font-serif text-2xl uppercase leading-tight">
-                        {product.title}
+                        {localizeProductTitle(product.title, isEnglish ? "en" : "uk")}
                       </p>
                       <p className="mt-2 text-xs uppercase text-[#111111]/50">
                         {formatPrice(product.priceNumber)}
@@ -439,7 +440,7 @@ export function SiteHeader() {
                     onClick={closeCart}
                   >
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                      <img src={item.image} alt={localizeProductTitle(item.title, isEnglish ? "en" : "uk")} className="h-full w-full object-cover" />
                     ) : (
                       <div className="h-full w-full border border-[#111111]/10" />
                     )}
@@ -451,7 +452,7 @@ export function SiteHeader() {
                       className="font-serif text-2xl uppercase leading-tight"
                       onClick={closeCart}
                     >
-                      {item.title}
+                      {localizeProductTitle(item.title, isEnglish ? "en" : "uk")}
                     </Link>
                     <div className="mt-3 space-y-1 text-xs uppercase text-[#111111]/50">
                       {(item.size || item.color) && (
@@ -555,7 +556,7 @@ export function SiteHeader() {
                     onClick={() => setIsWishlistOpen(false)}
                   >
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                      <img src={item.image} alt={localizeProductTitle(item.title, isEnglish ? "en" : "uk")} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="h-full w-full border border-[#111111]/10" />
                     )}
@@ -567,7 +568,7 @@ export function SiteHeader() {
                       className="font-serif text-2xl uppercase leading-tight"
                       onClick={() => setIsWishlistOpen(false)}
                     >
-                      {item.title}
+                      {localizeProductTitle(item.title, isEnglish ? "en" : "uk")}
                     </Link>
                     <p className="mt-3 text-xs uppercase text-[#111111]/50">
                       {formatPrice(item.priceNumber)}

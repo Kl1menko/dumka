@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS products (
   handle       text          UNIQUE NOT NULL,
   title        text          NOT NULL,
   body_html    text          NOT NULL DEFAULT '',
+  body_html_en text          NOT NULL DEFAULT '',
   images       text[]        NOT NULL DEFAULT '{}',
   product_type text          NOT NULL DEFAULT '',
   tags         text[]        NOT NULL DEFAULT '{}',

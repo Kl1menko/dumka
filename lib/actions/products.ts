@@ -19,6 +19,7 @@ export interface ProductInput {
   handle: string;
   title: string;
   body_html: string;
+  body_html_en?: string;
   images: string[];  // ordered list of image URLs
   product_type: string;
   tags: string[];
@@ -52,6 +53,7 @@ function sanitizeInput(input: ProductInput): ProductInput {
     handle,
     title,
     body_html: input.body_html.trim(),
+    body_html_en: (input.body_html_en || "").trim(),
     product_type: input.product_type.trim(),
     tags: input.tags.map((tag) => tag.trim()).filter(Boolean),
     images: input.images.map((image) => image.trim()).filter(Boolean),
@@ -94,6 +96,7 @@ export async function createProduct(input: ProductInput) {
       handle: normalizedInput.handle,
       title: normalizedInput.title,
       body_html: normalizedInput.body_html,
+      body_html_en: normalizedInput.body_html_en,
       images: normalizedInput.images,
       product_type: normalizedInput.product_type,
       tags: normalizedInput.tags,
@@ -157,6 +160,7 @@ export async function updateProduct(
       handle: normalizedInput.handle,
       title: normalizedInput.title,
       body_html: normalizedInput.body_html,
+      body_html_en: normalizedInput.body_html_en,
       images: normalizedInput.images,
       product_type: normalizedInput.product_type,
       tags: normalizedInput.tags,

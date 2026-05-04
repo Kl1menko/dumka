@@ -38,6 +38,7 @@ export default async function EditProductPage({ params }: Props) {
     handle: data.handle,
     title: data.title,
     body_html: data.body_html,
+    body_html_en: data.body_html_en ?? "",
     images: data.images ?? [],
     product_type: data.product_type,
     tags: data.tags ?? [],

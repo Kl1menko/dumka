@@ -10,6 +10,7 @@ import { useCurrency } from "@/components/CurrencyProvider";
 import { useRecentlyViewed, type RecentProduct } from "@/lib/recently-viewed";
 import { getSiteContent } from "@/content/site";
 import { Locale } from "@/lib/i18n";
+import { localizeProductTitle } from "@/lib/product-title";
 
 export function ProductClient({
   locale,
@@ -20,7 +21,17 @@ export function ProductClient({
   product: Product;
   relatedProducts: Product[];
 }) {
+  const isRealSize = (value: string | undefined) => {
+    const normalized = (value || "").trim().toLowerCase();
+    return normalized.length > 0 && normalized !== "default title";
+  };
+
   const content = getSiteContent(locale).product;
+  const displayTitle = localizeProductTitle(product.title, locale);
+  const localizedDescription =
+    locale === "en" && product.bodyHtmlEn?.trim().length
+      ? product.bodyHtmlEn
+      : product.bodyHtml;
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { formatPrice } = useCurrency();
   const colorOptions = Array.from(
@@ -39,7 +50,7 @@ export function ProductClient({
 
   const sizeOptions = Array.from(
     filteredVariants
-      .filter((variant) => variant.size)
+      .filter((variant) => isRealSize(variant.size))
       .reduce((options, variant) => {
         const current = options.get(variant.size);
         options.set(variant.size, {
@@ -57,7 +68,7 @@ export function ProductClient({
   const { addProduct } = useCart();
   const currentAsRecent: RecentProduct = {
     handle: product.handle,
-    title: product.title,
+    title: displayTitle,
     image: product.images[0] || "",
     price: product.price,
     priceNumber: product.priceNumber,
@@ -85,7 +96,7 @@ export function ProductClient({
     addProduct(product, selectedSize, selectedColor);
   }
 
-  const hasHtmlDescription = /<[^>]+>/.test(product.bodyHtml);
+  const hasHtmlDescription = /<[^>]+>/.test(localizedDescription);
 
   return (
     <div className="min-h-screen pb-28 pt-20 md:pb-16 md:pt-28">
@@ -99,7 +110,7 @@ export function ProductClient({
               >
                 <Image
                   src={img}
-                  alt={`${product.title} ${i + 1}`}
+                  alt={`${displayTitle} ${i + 1}`}
                   fill
                   sizes="(max-width: 768px) 86vw, 60vw"
                   className="object-cover"
@@ -120,14 +131,14 @@ export function ProductClient({
                 <p className="text-xs uppercase text-[#111111]/55">{content.kicker}</p>
                 <WishlistButton
                   handle={product.handle}
-                  title={product.title}
+                  title={displayTitle}
                   image={product.images[0] || ""}
                   price={product.price}
                   priceNumber={product.priceNumber}
                 />
               </div>
               <h1 className="mb-4 font-serif text-4xl font-light uppercase leading-tight md:text-5xl">
-                {product.title}
+                {displayTitle}
               </h1>
               <p className="mb-10 text-lg font-light text-[#111111]/70">
                 {formatPrice(selectedVariant?.priceNumber ?? product.priceNumber)}
@@ -237,11 +248,11 @@ export function ProductClient({
                     </span>
                   </summary>
                   <div className="pb-6 text-sm font-light leading-7 text-[#111111]/70">
-                    {product.bodyHtml ? (
+                    {localizedDescription ? (
                       hasHtmlDescription ? (
-                        <div dangerouslySetInnerHTML={{ __html: product.bodyHtml }} />
+                        <div dangerouslySetInnerHTML={{ __html: localizedDescription }} />
                       ) : (
-                        <div className="whitespace-pre-line">{product.bodyHtml}</div>
+                        <div className="whitespace-pre-line">{localizedDescription}</div>
                       )
                     ) : (
                       <p>{content.descriptionFallback}</p>
@@ -288,7 +299,7 @@ export function ProductClient({
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-8 lg:grid-cols-3">
               {relatedProducts.map((item) => (
-                <ProductCard key={item.handle} product={item} />
+                <ProductCard key={item.handle} product={item} locale={locale} />
               ))}
             </div>
           </section>
@@ -308,7 +319,7 @@ export function ProductClient({
                     {item.image && (
                       <Image
                         src={item.image}
-                        alt={item.title}
+                        alt={localizeProductTitle(item.title, locale)}
                         fill
                         sizes="(max-width: 640px) 50vw, 25vw"
                         className="product-tile-image opacity-100"
@@ -316,7 +327,7 @@ export function ProductClient({
                       />
                     )}
                   </div>
-                  <p className="line-clamp-2 text-[13px] leading-5 text-[#111111]">{item.title}</p>
+                  <p className="line-clamp-2 text-[13px] leading-5 text-[#111111]">{localizeProductTitle(item.title, locale)}</p>
                   <p className="mt-1 text-[12px] text-[#111111]/62">{item.price}</p>
                 </a>
               ))}
@@ -327,7 +338,7 @@ export function ProductClient({
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#111111]/10 bg-white px-4 py-3 md:hidden">
         <div className="mb-3 flex items-center justify-between gap-4 text-sm">
-          <span className="line-clamp-1">{product.title}</span>
+          <span className="line-clamp-1">{displayTitle}</span>
           <span className="shrink-0 text-[#111111]/65">
             {formatPrice(selectedVariant?.priceNumber ?? product.priceNumber)}
           </span>

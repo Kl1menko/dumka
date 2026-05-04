@@ -18,10 +18,10 @@ export default function ShopLoading() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1600px] grid-cols-2 gap-x-3 gap-y-10 px-4 py-8 sm:gap-x-5 md:gap-x-8 md:gap-y-16 md:px-8 md:py-12 lg:grid-cols-3">
+      <section className="mx-auto grid max-w-[1600px] grid-cols-2 gap-x-3 gap-y-10 px-4 py-8 sm:gap-x-5 md:gap-x-8 md:gap-y-16 md:px-8 md:py-12 xl:grid-cols-3">
         {Array.from({ length: 9 }).map((_, index) => (
           <div key={index}>
-            <div className="aspect-[1/1.25] bg-[#111111]/10 md:aspect-[3/4]" />
+            <div className="aspect-[3/4] bg-[#111111]/10" />
             <div className="mt-3 h-4 w-3/4 bg-[#111111]/10" />
             <div className="mt-2 h-3 w-20 bg-[#111111]/10" />
           </div>

@@ -183,7 +183,7 @@ button {
 
 @media (max-width: 767px) {
   .product-tile-media {
-    aspect-ratio: 1 / 1.25;
+    aspect-ratio: 3 / 4;
     margin-bottom: 0.65rem;
   }
 
@@ -218,8 +218,8 @@ button {
 
 /* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -228,12 +228,12 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(17, 17, 17, 0.18);
+  background: rgba(17, 17, 17, 0.5);
   border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(17, 17, 17, 0.45);
+  background: rgba(17, 17, 17, 0.7);
 }
 
 ::-webkit-scrollbar-corner {
