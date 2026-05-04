@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Product } from "@/lib/types";
 import { ProductCard } from "@/components/ProductCard";
+import { WishlistButton } from "@/components/WishlistButton";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useRecentlyViewed, type RecentProduct } from "@/lib/recently-viewed";
 import { getSiteContent } from "@/content/site";
 import { Locale } from "@/lib/i18n";
 
@@ -52,6 +55,15 @@ export function ProductClient({
     firstAvailableSize || sizeOptions[0]?.size || ""
   );
   const { addProduct } = useCart();
+  const currentAsRecent: RecentProduct = {
+    handle: product.handle,
+    title: product.title,
+    image: product.images[0] || "",
+    price: product.price,
+    priceNumber: product.priceNumber,
+  };
+  const { items: recentItems } = useRecentlyViewed(currentAsRecent);
+
   const fallbackImage =
     "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
   const images = product.images.length > 0 ? product.images : [fallbackImage];
@@ -85,11 +97,15 @@ export function ProductClient({
                 key={img}
                 className="relative aspect-[4/5] w-[86vw] shrink-0 snap-center overflow-hidden bg-white first:ml-4 last:mr-4 md:ml-0 md:mr-0 md:w-full"
               >
-                <img
+                <Image
                   src={img}
                   alt={`${product.title} ${i + 1}`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 86vw, 60vw"
+                  className="object-cover"
                   referrerPolicy="no-referrer"
+                  unoptimized
+                  priority={i === 0}
                 />
                 <span className="absolute bottom-4 right-4 bg-white/90 px-3 py-2 text-[11px] text-[#111111]/70 md:hidden">
                   {i + 1} / {images.length}
@@ -100,7 +116,10 @@ export function ProductClient({
 
           <div className="relative w-full px-4 md:px-0 lg:w-2/5">
             <div className="sticky top-32">
-              <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.kicker}</p>
+              <div className="mb-5 flex items-center justify-between">
+                <p className="text-xs uppercase text-[#111111]/55">{content.kicker}</p>
+                <WishlistButton handle={product.handle} />
+              </div>
               <h1 className="mb-4 font-serif text-4xl font-light uppercase leading-tight md:text-5xl">
                 {product.title}
               </h1>
@@ -262,6 +281,36 @@ export function ProductClient({
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-8 lg:grid-cols-3">
               {relatedProducts.map((item) => (
                 <ProductCard key={item.handle} product={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {recentItems.length > 0 && (
+          <section className="px-4 pt-20 md:px-0 md:pt-24">
+            <div className="mb-10 border-t border-[#111111]/10 pt-10">
+              <p className="mb-3 text-xs uppercase text-[#111111]/45">
+                {locale === "en" ? "Recently viewed" : "Нещодавно переглянуті"}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:gap-8 lg:grid-cols-4">
+              {recentItems.slice(0, 4).map((item) => (
+                <a key={item.handle} href={`/shop/${item.handle}`} className="group block">
+                  <div className="product-tile-media">
+                    {item.image && (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="product-tile-image opacity-100"
+                        unoptimized
+                      />
+                    )}
+                  </div>
+                  <p className="line-clamp-2 text-[13px] leading-5 text-[#111111]">{item.title}</p>
+                  <p className="mt-1 text-[12px] text-[#111111]/62">{item.price}</p>
+                </a>
               ))}
             </div>
           </section>

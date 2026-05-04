@@ -252,6 +252,32 @@ export async function updateSortOrder(
   revalidatePath("/admin");
 }
 
+// ── Bulk actions ─────────────────────────────────────────────────────────────
+
+export async function bulkSetPublished(handles: string[], published: boolean) {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("products")
+    .update({ published })
+    .in("handle", handles);
+  if (error) throw new Error(error.message);
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath("/admin");
+}
+
+export async function bulkDelete(handles: string[]) {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .in("handle", handles);
+  if (error) throw new Error(error.message);
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath("/admin");
+}
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export async function signOut() {

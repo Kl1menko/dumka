@@ -122,6 +122,17 @@ button {
   animation: fade-up 900ms ease both;
 }
 
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.75s ease, transform 0.75s ease;
+}
+
+[data-reveal].reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
 .product-tile-media {
   aspect-ratio: 3 / 4;
   background: #ffffff;

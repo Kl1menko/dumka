@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { HomeCategorySlider } from "@/components/HomeCategorySlider";
 import { getSiteContent } from "@/content/site";
 import { getStoriesContent, type StoryItem } from "@/content/stories";
+import { ScrollRevealInit } from "@/components/ScrollRevealInit";
 import { Locale } from "@/lib/i18n";
 
 export default function HomePage() {
@@ -31,6 +32,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
 
   return (
     <>
+      <ScrollRevealInit />
       <section className="relative h-dvh min-h-[680px] w-full overflow-hidden bg-white">
         <img
           src={heroImage}
@@ -87,7 +89,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </div>
 
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border-t border-[#111111]/10 px-4 py-20 md:grid-cols-[0.7fr_1.3fr] md:px-8 md:py-28">
+      <section data-reveal className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border-t border-[#111111]/10 px-4 py-20 md:grid-cols-[0.7fr_1.3fr] md:px-8 md:py-28">
         <div className="flex flex-col justify-between gap-10">
           <p className="text-xs uppercase text-[#111111]/55">{content.statementKicker}</p>
           <dl className="hidden space-y-5 text-xs md:block">
@@ -116,7 +118,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </section>
 
-      <section id="collection" className="mx-auto max-w-[1600px] px-4 py-24 md:px-8">
+      <section id="collection" data-reveal className="mx-auto max-w-[1600px] px-4 py-24 md:px-8">
         <div className="mb-20 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div>
             <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.collectionKicker}</p>
@@ -166,7 +168,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
       </section>
 
       {featuredStories.length > 0 && (
-        <section className="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
+        <section data-reveal className="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
           <div className="mb-12 flex items-end justify-between gap-8 border-b border-[#111111]/10 pb-8">
             <h2 className="font-serif text-4xl font-light lowercase md:text-5xl">
               {storiesContent.title}
@@ -209,7 +211,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </section>
       )}
 
-      <section className="border-t border-[#111111]/10 py-20 md:py-28">
+      <section data-reveal className="border-t border-[#111111]/10 py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="mb-12 flex items-center justify-between gap-8">
             <p className="text-xs uppercase text-[#111111]/45">{content.mediaKicker}</p>
@@ -242,7 +244,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </section>
 
-      <section id="showroom" className="border-t border-[#111111]/10 py-24 md:py-32">
+      <section id="showroom" data-reveal className="border-t border-[#111111]/10 py-24 md:py-32">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 md:grid-cols-2 md:px-8">
           <div className="relative aspect-[4/5] overflow-hidden bg-white">
             <img

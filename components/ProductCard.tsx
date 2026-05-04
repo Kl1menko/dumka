@@ -1,35 +1,45 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Product } from "@/lib/types";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { WishlistButton } from "@/components/WishlistButton";
+
+const FALLBACK =
+  "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
 
 export function ProductCard({ product }: { product: Product }) {
   const { formatPrice } = useCurrency();
-  const mainImage =
-    product.images[0] ||
-    "https://cdn.shopify.com/s/files/1/0761/0128/8093/files/8D79654B-A80C-4BD0-903A-FD90FA063B2E.jpg?v=1776442243";
+  const mainImage = product.images[0] || FALLBACK;
   const hoverImage = product.images[1] || mainImage;
 
   return (
-    <Link 
-      href={`/shop/${product.handle}`}
-      className="group block"
-    >
+    <Link href={`/shop/${product.handle}`} className="group block">
       <div className="product-tile-media">
-        <img
+        <Image
           src={mainImage}
           alt={product.title}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="product-tile-image opacity-100 group-hover:opacity-0"
           referrerPolicy="no-referrer"
+          unoptimized
         />
-        <img
+        <Image
           src={hoverImage}
           alt={`${product.title} alternative`}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="product-tile-image opacity-0 group-hover:opacity-100"
           referrerPolicy="no-referrer"
+          unoptimized
         />
         <span className="product-tile-action" aria-hidden="true">+</span>
+        <WishlistButton
+          handle={product.handle}
+          className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+        />
       </div>
 
       <div className="px-1 pb-2 sm:px-0">
