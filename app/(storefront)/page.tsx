@@ -1,10 +1,10 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
+import Image from "next/image";
 import { getProducts } from "@/lib/data";
 import { ProductCard } from "@/components/ProductCard";
 import { HomeCategorySlider } from "@/components/HomeCategorySlider";
 import { getSiteContent } from "@/content/site";
-import { getStoriesContent, type StoryItem } from "@/content/stories";
 import { ScrollRevealInit } from "@/components/ScrollRevealInit";
 import { Locale } from "@/lib/i18n";
 
@@ -25,20 +25,17 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
     { title: content.categoryTitles.evening, href: `${localePrefix}/shop?category=evening`, image: content.categoryImages.evening },
   ];
   const seasonalNotes = ["Petalia Veil", "Poppy Veil Elegance", "Petal Grace", "Pavera Rubin"];
-  const storiesContent = getStoriesContent(locale);
-  const featuredStories = (storiesContent.stories as unknown as StoryItem[])
-    .filter((s): s is StoryItem & { slug: string } => typeof s.slug === "string" && s.slug.length > 0)
-    .slice(0, 3);
-
   return (
     <>
       <ScrollRevealInit />
       <section className="relative h-dvh min-h-[680px] w-full overflow-hidden bg-white">
-        <img
+        <Image
           src={heroImage}
           alt="DUMKA editorial collection"
-          className="absolute inset-0 h-full w-full object-cover object-top opacity-85"
-          referrerPolicy="no-referrer"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-top opacity-85"
         />
         <div className="absolute inset-0 bg-[#111111]/25" />
 
@@ -91,39 +88,9 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </div>
 
-      <section data-reveal className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border-t border-[#111111]/10 px-4 py-20 md:grid-cols-[0.7fr_1.3fr] md:px-8 md:py-28">
-        <div className="flex flex-col justify-between gap-10">
-          <p className="text-xs uppercase text-[#111111]/55">{content.statementKicker}</p>
-          <dl className="hidden space-y-5 text-xs md:block">
-            {([
-              [locale === "en" ? "Collection" : "Колекція", locale === "en" ? "Maky" : "Маки"],
-              [locale === "en" ? "Season" : "Сезон", locale === "en" ? "Spring — Summer 2026" : "Весна — Літо 2026"],
-              [locale === "en" ? "Materials" : "Матеріали", locale === "en" ? "Silk, linen, organza" : "Шовк, льон, органза"],
-              [locale === "en" ? "Made in" : "Виробництво", locale === "en" ? "Lviv, Ukraine" : "Львів, Україна"],
-            ] as [string, string][]).map(([label, value]) => (
-              <div key={label}>
-                <dt className="uppercase text-[#111111]/35">{label}</dt>
-                <dd className="mt-1 text-[#111111]/75">{value}</dd>
-              </div>
-            ))}</dl>
-        </div>
-        <div>
-          <h2 className="font-serif text-4xl font-light leading-tight md:text-6xl">
-            {content.statement}
-          </h2>
-          <a
-            href={`${localePrefix}/stories/maky-spring-summer-2026`}
-            className="luxury-link mt-10 inline-flex text-xs uppercase"
-          >
-            {locale === "en" ? "Read the story" : "Читати про колекцію"}
-          </a>
-        </div>
-      </section>
-
       <section id="collection" className="mx-auto max-w-[1600px] px-4 py-24 md:px-8">
         <div className="mb-20 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div>
-            <p className="mb-5 text-xs uppercase text-[#111111]/55">{content.collectionKicker}</p>
             <h2 className="font-serif text-4xl font-light uppercase md:text-6xl">{content.collectionTitle}</h2>
           </div>
           <a href="#showroom" className="ghost-button">
@@ -169,54 +136,10 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
         </div>
       </section>
 
-      {featuredStories.length > 0 && (
-        <section data-reveal className="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
-          <div className="mb-12 flex items-end justify-between gap-8 border-b border-[#111111]/10 pb-8">
-            <h2 className="font-serif text-4xl font-light lowercase md:text-5xl">
-              {storiesContent.title}
-            </h2>
-            <a href={`${localePrefix}/stories`} className="luxury-link shrink-0 text-xs uppercase">
-              {locale === "en" ? "All stories" : "Всі історії"}
-            </a>
-          </div>
-          <div className="grid gap-8 md:grid-cols-3">
-            {featuredStories.map((story) => (
-              <a
-                key={story.slug}
-                href={`${localePrefix}/stories/${story.slug}`}
-                className="group block"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#f5f5f3]">
-                  <img
-                    src={story.image}
-                    alt={story.title}
-                    className="h-full w-full object-cover object-top transition duration-700 group-hover:scale-[1.03]"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="mt-5 flex gap-3 text-[10px] uppercase tracking-widest text-[#111111]/45">
-                  <span>{story.category}</span>
-                  <span>{story.year}</span>
-                </div>
-                <h3 className="mt-3 font-serif text-xl font-light leading-snug md:text-2xl">
-                  {story.title}
-                </h3>
-                <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#111111]/55">
-                  {story.excerpt}
-                </p>
-                <span className="luxury-link mt-4 inline-flex text-xs uppercase">
-                  {storiesContent.readLabel}
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section data-reveal className="border-t border-[#111111]/10 py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="mb-12 flex items-center justify-between gap-8">
-            <p className="text-xs uppercase text-[#111111]/45">{content.mediaKicker}</p>
+            <p className="text-xs uppercase text-[#111111]/45"></p>
             <h2 className="font-serif text-3xl font-light uppercase md:text-4xl">{content.mediaTitle}</h2>
           </div>
 
@@ -269,7 +192,6 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
             />
           </div>
           <div className="flex flex-col">
-            <p className="mb-6 text-xs uppercase text-[#111111]/55">{content.showroomKicker}</p>
             <h2 className="mb-8 font-serif text-4xl font-light leading-tight md:text-6xl">
               {content.showroomTitle}
             </h2>

@@ -1,4 +1,65 @@
 import { Product } from "./types";
+import { storiesContent } from "@/content/stories";
+
+export type CollectionFilter = string; // collection handle slug, e.g. "maky-spring-summer-2026"
+
+export interface CollectionOption {
+  slug: string;
+  labelUk: string;
+  labelEn: string;
+}
+
+export function getCollectionOptions(): CollectionOption[] {
+  const uk = storiesContent.uk.stories as readonly { slug?: string; title: string }[];
+  const en = storiesContent.en.stories as readonly { slug?: string; title: string }[];
+  return uk
+    .filter((s): s is { slug: string; title: string } => typeof s.slug === "string")
+    .map((s, i) => {
+      const enStory = en.find((e) => e.slug === s.slug);
+      return {
+        slug: s.slug,
+        labelUk: s.title,
+        labelEn: enStory?.title || s.title,
+      };
+    });
+}
+
+function getProductCollectionSlugs(product: Product): string[] {
+  const slugs: string[] = [];
+  for (const tag of product.tags) {
+    const normalized = (tag || "").trim().toLowerCase();
+    if (!normalized.startsWith("collection:")) continue;
+    slugs.push(normalized.slice("collection:".length).trim());
+  }
+  return slugs;
+}
+
+export function filterProductsByCollection(products: Product[], collection: string): Product[] {
+  if (!collection) return products;
+  return products.filter((p) => getProductCollectionSlugs(p).includes(collection));
+}
+
+export function filterProductsByPrice(
+  products: Product[],
+  min: number | null,
+  max: number | null
+): Product[] {
+  if (min === null && max === null) return products;
+  return products.filter((p) => {
+    if (min !== null && p.priceNumber < min) return false;
+    if (max !== null && p.priceNumber > max) return false;
+    return true;
+  });
+}
+
+export function getPriceRange(products: Product[]): { min: number; max: number } {
+  if (!products.length) return { min: 0, max: 100000 };
+  const prices = products.map((p) => p.priceNumber).filter((n) => n > 0);
+  return {
+    min: Math.floor(Math.min(...prices) / 1000) * 1000,
+    max: Math.ceil(Math.max(...prices) / 1000) * 1000,
+  };
+}
 
 export type CategorySlug =
   | "all"

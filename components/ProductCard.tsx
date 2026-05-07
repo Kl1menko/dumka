@@ -36,7 +36,7 @@ export function ProductCard({
           src={hoverImage}
           alt=""
           aria-hidden="true"
-          loading="eager"
+          loading="lazy"
           className="product-tile-image opacity-0 group-hover:opacity-100"
           referrerPolicy="no-referrer"
         />

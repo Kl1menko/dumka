@@ -116,7 +116,6 @@ export function ProductClient({
                   sizes="(max-width: 768px) 86vw, 60vw"
                   className="object-cover"
                   referrerPolicy="no-referrer"
-                  unoptimized
                   priority={i === 0}
                 />
                 <span className="absolute bottom-4 right-4 bg-white/90 px-3 py-2 text-[11px] text-[#111111]/70 md:hidden">
@@ -324,7 +323,6 @@ export function ProductClient({
                         fill
                         sizes="(max-width: 640px) 50vw, 25vw"
                         className="product-tile-image opacity-100"
-                        unoptimized
                       />
                     )}
                   </div>

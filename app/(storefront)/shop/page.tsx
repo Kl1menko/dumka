@@ -6,6 +6,8 @@ import { getCatalogProductsResult } from "@/lib/data";
 import {
   catalogCategories,
   getCategoryCounts,
+  getCollectionOptions,
+  getPriceRange,
   normalizeCategory,
   normalizeSort,
 } from "@/lib/catalog";
@@ -15,6 +17,9 @@ type ShopPageProps = {
   searchParams: Promise<{
     category?: string;
     sort?: string;
+    collection?: string;
+    priceMin?: string;
+    priceMax?: string;
   }>;
 };
 
@@ -31,7 +36,7 @@ export async function ShopPageContent({
   searchParams,
   locale = "uk",
 }: ShopPageProps & { locale?: Locale }) {
-  const [{ category, sort }, products] = await Promise.all([
+  const [{ category, sort, collection, priceMin, priceMax }, products] = await Promise.all([
     searchParams,
     getCatalogProductsResult(),
   ]);
@@ -41,6 +46,8 @@ export async function ShopPageContent({
   const categoryCounts = Object.fromEntries(
     catalogCategories.map((item) => [item.slug, counts.get(item.slug) || 0])
   );
+  const collectionOptions = getCollectionOptions();
+  const priceRange = getPriceRange(products.products);
 
   return (
     <CatalogClient
@@ -50,6 +57,11 @@ export async function ShopPageContent({
       initialCategory={initialCategory}
       initialSort={initialSort}
       categoryCounts={categoryCounts}
+      collectionOptions={collectionOptions}
+      priceRange={priceRange}
+      initialCollection={collection || ""}
+      initialPriceMin={priceMin ? Number(priceMin) : null}
+      initialPriceMax={priceMax ? Number(priceMax) : null}
     />
   );
 }

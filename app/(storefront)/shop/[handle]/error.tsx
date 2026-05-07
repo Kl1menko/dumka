@@ -12,7 +12,7 @@ export default function ProductError({
         Виріб тимчасово недоступний
       </p>
       <p className="max-w-md text-sm leading-7 text-[#111111]/60">
-        Не вдалося отримати дані з Shopify. Оновіть сторінку або зв'яжіться з шоурумом.
+        Не вдалося завантажити дані. Оновіть сторінку або зв'яжіться з шоурумом.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <button className="primary-button" onClick={reset}>

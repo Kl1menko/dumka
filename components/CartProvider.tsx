@@ -8,6 +8,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
+import { getLocaleFromPathname } from "@/lib/i18n";
 import { Product } from "@/lib/types";
 
 const CART_STORAGE_KEY = "dumka-cart-v1";
@@ -45,6 +47,9 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isEnglish = getLocaleFromPathname(pathname ?? "") === "en";
+  const checkoutErrorMsg = isEnglish ? "Failed to proceed to checkout." : "Не вдалося перейти до оформлення.";
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -151,7 +156,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const payload = await response.json();
 
         if (!response.ok || !payload.checkoutUrl) {
-          throw new Error(payload.error || "Не вдалося перейти до оформлення.");
+          throw new Error(payload.error || checkoutErrorMsg);
         }
 
         window.location.href = payload.checkoutUrl;
@@ -159,7 +164,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setCheckoutError(
           error instanceof Error
             ? error.message
-            : "Не вдалося перейти до оформлення."
+            : checkoutErrorMsg
         );
       } finally {
         setCheckoutLoading(false);

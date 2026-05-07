@@ -68,6 +68,11 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
+    document.body.style.overflow = overlayOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [overlayOpen]);
+
+  useEffect(() => {
     if (drawer !== "search") {
       return;
     }
@@ -258,7 +263,7 @@ export function SiteHeader() {
         }`}
       >
         <div className="mb-6 shrink-0 flex items-center justify-between text-xs uppercase">
-          <span>{drawer === "search" ? (isEnglish ? "Search" : "Пошук") : (isEnglish ? "Navigation" : "Навігація")}</span>
+          <span>{drawer === "search" ? (isEnglish ? "Search" : "Пошук") : ""}</span>
           <button className="luxury-link" onClick={() => setDrawer(null)}>
             {isEnglish ? "Close" : "Закрити"}
           </button>
@@ -275,13 +280,13 @@ export function SiteHeader() {
                 {isEnglish ? "Maky" : "Маки"}
               </Link>
               <Link href={`${isEnglish ? "/en" : ""}/#lookbook`} onClick={() => setDrawer(null)}>
-                Lookbook
+                {isEnglish ? "Lookbook" : "Лукбук"}
               </Link>
               <Link href={`${isEnglish ? "/en" : ""}/#showroom`} onClick={() => setDrawer(null)}>
                 {isEnglish ? "Showroom" : "Шоурум"}
               </Link>
               <Link href={`${isEnglish ? "/en" : ""}/stories`} onClick={() => setDrawer(null)}>
-                Stories
+                {isEnglish ? "Stories" : "Історії"}
               </Link>
             </nav>
             <div className="grid grid-cols-2 gap-8 border-t border-[#111111]/10 pt-8 text-xs uppercase text-[#111111]/60">
@@ -299,9 +304,9 @@ export function SiteHeader() {
               <div className="space-y-4">
                 <p className="text-[#111111]">{isEnglish ? "Collections" : "Колекції"}</p>
                 <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/maky-spring-summer-2026`} onClick={() => setDrawer(null)}>{isEnglish ? "Maky 2026" : "Маки 2026"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/grono-fall-winter-2025`} onClick={() => setDrawer(null)}>{isEnglish ? "Grono 2025/26" : "Гроно 2025/26"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/kalyna-2023`} onClick={() => setDrawer(null)}>{isEnglish ? "Kalyna 2023" : "Калина 2023"}</Link>
-                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/inspired-by-ukraine-2022`} onClick={() => setDrawer(null)}>{isEnglish ? "Inspired by Ukraine" : "Окрилена Україною"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/grono-autumn-winter-2025-26`} onClick={() => setDrawer(null)}>{isEnglish ? "Grono 2025/26" : "Гроно 2025/26"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/kalyna-spring-summer-2023`} onClick={() => setDrawer(null)}>{isEnglish ? "Kalyna 2023" : "Калина 2023"}</Link>
+                <Link className="block luxury-link" href={`${isEnglish ? "/en" : ""}/stories/okrylena-ukrainoyu-spring-summer-2022`} onClick={() => setDrawer(null)}>{isEnglish ? "Inspired by Ukraine" : "Окрилена Україною"}</Link>
               </div>
             </div>
             <div className="border-t border-[#111111]/10 pt-8 md:hidden">

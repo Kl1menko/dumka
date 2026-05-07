@@ -9,6 +9,7 @@ const nextConfig = {
       { protocol: "https", hostname: "nadiyadumka.com" },
       { protocol: "https", hostname: "*.supabase.co" },
     ],
+    minimumCacheTTL: 31536000,
   },
   eslint: {
     ignoreDuringBuilds: true,

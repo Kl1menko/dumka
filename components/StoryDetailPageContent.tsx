@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getCollectionStories, getStoriesContent, StoryItem } from "@/content/stories";
 import { Locale } from "@/lib/i18n";
+import { Product } from "@/lib/types";
+import { ProductCard } from "@/components/ProductCard";
 
 function getStoriesBasePath(locale: Locale) {
   return locale === "en" ? "/en/stories" : "/stories";
@@ -9,9 +11,11 @@ function getStoriesBasePath(locale: Locale) {
 export function StoryDetailPageContent({
   locale,
   story,
+  collectionProducts = [],
 }: {
   locale: Locale;
   story: StoryItem;
+  collectionProducts?: Product[];
 }) {
   const content = getStoriesContent(locale);
   const storiesBasePath = getStoriesBasePath(locale);
@@ -102,12 +106,37 @@ export function StoryDetailPageContent({
         </div>
       </section>
 
+      {collectionProducts.length > 0 && (
+        <section className="mx-auto max-w-[1700px] px-4 py-20 md:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-[#111111]/10 pb-7">
+            <h2 className="font-serif text-3xl font-light lowercase md:text-4xl">
+              {content.collectionPiecesLabel}
+            </h2>
+            {story.sourceUrl ? (
+              <a
+                href={story.sourceUrl}
+                className="luxury-link text-xs uppercase"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {content.sourceLabel}
+              </a>
+            ) : null}
+          </div>
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {collectionProducts.map((product) => (
+              <ProductCard key={product.handle} product={product} locale={locale} />
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="mx-auto max-w-[1700px] px-4 py-20 md:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6 border-b border-[#111111]/10 pb-7">
           <h2 className="font-serif text-3xl font-light lowercase md:text-4xl">
             {content.moreLabel}
           </h2>
-          {story.sourceUrl ? (
+          {story.sourceUrl && collectionProducts.length === 0 ? (
             <a
               href={story.sourceUrl}
               className="luxury-link text-xs uppercase"
