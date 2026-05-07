@@ -187,7 +187,7 @@ export async function HomePageContent({ locale = "uk" }: { locale?: Locale }) {
             <img
               src={allProducts[5]?.images[0] || heroImage}
               alt="DUMKA showroom fitting"
-              className="absolute inset-0 h-full w-full object-cover grayscale"
+              className="absolute inset-0 h-full w-full object-cover object-top grayscale"
               referrerPolicy="no-referrer"
             />
           </div>
