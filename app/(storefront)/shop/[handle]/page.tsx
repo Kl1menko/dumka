@@ -5,12 +5,7 @@ import type { Product } from "@/lib/types";
 import { ProductClient } from "./ProductClient";
 import { Locale } from "@/lib/i18n";
 
-export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.map((product) => ({
-    handle: product.handle,
-  }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -56,7 +51,7 @@ export async function generateMetadataForLocale(
   };
 }
 
-export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   return ProductPageContent({ params, locale: "uk" });
 }
 
@@ -70,8 +65,8 @@ export async function ProductPageContent({
   const { handle } = await params;
   const { products, error } = await getProductsResult();
 
-  if (error) {
-    throw new Error(error);
+  if (error || !products.length) {
+    notFound();
   }
 
   const product = findProductByHandle(products, handle);

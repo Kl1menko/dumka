@@ -1,15 +1,14 @@
 import {
-  generateStaticParams,
   generateMetadataForLocale,
   ProductPageContent,
 } from "../../../shop/[handle]/page";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 type ProductPageProps = {
   params: Promise<{ handle: string }>;
 };
-
-export { generateStaticParams };
 
 export async function generateMetadata({
   params,

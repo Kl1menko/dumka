@@ -8,6 +8,7 @@ const nextConfig = {
       { protocol: "https", hostname: "www.nadiyadumka.com" },
       { protocol: "https", hostname: "nadiyadumka.com" },
       { protocol: "https", hostname: "*.supabase.co" },
+      { protocol: "https", hostname: "cdn.kllo.com.ua" },
     ],
     minimumCacheTTL: 31536000,
   },
